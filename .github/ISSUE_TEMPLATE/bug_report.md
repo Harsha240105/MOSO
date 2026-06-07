@@ -1,34 +1,50 @@
 ---
 name: Bug Report
-about: Create a report to help us improve MOSO AI
+about: Report a bug in MOSO AI
 title: '[BUG] '
 labels: bug
 assignees: ''
-
 ---
 
-**Describe the Bug**
-A clear and concise description of what the bug is.
+## Bug Description
+A clear and concise description of the bug.
 
-**To Reproduce**
+## To Reproduce
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '...'
 3. See error
 
-**Expected Behavior**
-A clear description of what you expected to happen.
+## Expected Behavior
+What you expected to happen.
 
-**Screenshots / Logs**
-If applicable, add screenshots or logs to help explain your problem.
+## Actual Behavior
+What actually happened.
 
-**Device (please complete):**
-- Device: [e.g. Pixel 8, iPhone 15]
-- OS: [e.g. Android 14, iOS 17]
-- MOSO Version: [e.g. 0.1.0]
+## Screenshots / Logs
+If applicable, add screenshots or error logs.
 
-**Additional Context**
-Add any other context about the problem here.
+## Environment
+- **Device:** [e.g. Pixel 8, iPhone 15]
+- **OS:** [e.g. Android 14, iOS 17]
+- **MOSO Version:** [e.g. 1.0.0]
+- **AI Model:** [e.g. Phi-3 Mini, Gemma 2B]
 
-**Privacy Check**
-- [ ] I have confirmed no personal data is included in this report
+## Component
+- [ ] MOSO Core (inference, pipelines)
+- [ ] MoSo Memory Engine
+- [ ] M0S0 Assistant (personality, conversation)
+- [ ] Voice System
+- [ ] Vision System
+- [ ] Recommendation Engine
+- [ ] Platform App (Android/iOS/macOS/Windows/Linux)
+- [ ] Backend / Sync
+- [ ] Documentation
+- [ ] Other
+
+## Privacy Check
+- [ ] This report contains NO personal data
+- [ ] Logs have been sanitized
+
+## Additional Context
+Add any other context about the bug here.

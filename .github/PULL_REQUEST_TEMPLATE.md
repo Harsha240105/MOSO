@@ -2,56 +2,60 @@
 name: Pull Request
 about: Submit a pull request to MOSO AI
 title: ''
-labels: ''
+labels: needs-review
 assignees: ''
-
 ---
 
 ## Description
-
-Please include a summary of the change and which issue is fixed.
+Please include a summary of the change and which issue it fixes.
 
 Fixes #(issue)
 
 ## Type of Change
-
-- [ ] Bug fix (non-breaking change fixing an issue)
-- [ ] New feature (non-breaking change adding functionality)
-- [ ] Breaking change (fix or feature that would break existing functionality)
+- [ ] Bug fix (non-breaking)
+- [ ] New feature (non-breaking)
+- [ ] Breaking change
 - [ ] Performance improvement
 - [ ] Code refactor
-- [ ] Documentation update
-- [ ] CI/CD or build process change
+- [ ] Documentation
+- [ ] CI/CD or build
 
 ## Architecture Impact
-
 - [ ] MOSO Core
 - [ ] MoSo Memory Engine
+- [ ] M0S0 Assistant
+- [ ] Voice System
+- [ ] Vision System
+- [ ] Recommendation Engine
 - [ ] Shared Engine
-- [ ] Platform (apps/)
+- [ ] Platform App
 - [ ] Backend
-- [ ] Models
-- [ ] Tools
-- [ ] Documentation
-
-## Testing
-
-- [ ] Unit tests added/updated
-- [ ] Integration tests added/updated
-- [ ] AI evaluation tests passed
-- [ ] All CI checks pass
-
-## Privacy & Security
-
-- [ ] No sensitive data is logged or exposed
-- [ ] Local-first architecture respected
-- [ ] Encryption standards maintained
+- [ ] Documentation / Governance
 
 ## Checklist
-
-- [ ] My code follows the project's style guidelines
+- [ ] My code follows the project's coding standards
 - [ ] I have performed a self-review of my code
-- [ ] I have added comments in hard-to-understand areas
-- [ ] I have updated the documentation accordingly
+- [ ] I have added tests that prove my fix/feature works
+- [ ] All existing and new tests pass
 - [ ] My changes generate no new warnings
-- [ ] I have tested on all relevant platforms
+- [ ] I have updated documentation (if applicable)
+- [ ] My commits are signed (GPG/SSH)
+- [ ] My commits follow Conventional Commits format
+
+## Privacy & Security
+- [ ] This change does NOT introduce new data collection
+- [ ] Local-first architecture is respected
+- [ ] No secrets or credentials are exposed
+- [ ] Privacy impact has been assessed
+
+## Testing Performed
+Describe the testing you performed.
+
+## Screenshots (if applicable)
+
+## Additional Context
+Add any other context about the PR here.
+
+---
+
+> **Note:** Only maintainers can merge pull requests. All PRs require at least 2 maintainer approvals.

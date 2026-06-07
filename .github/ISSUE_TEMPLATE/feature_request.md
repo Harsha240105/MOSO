@@ -1,32 +1,44 @@
 ---
 name: Feature Request
-about: Suggest an idea for MOSO AI
+about: Suggest a feature for MOSO AI
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem?**
-A clear description of what the problem is.
+## Problem Statement
+A clear description of what problem this feature would solve.
 
-**Describe the Solution**
+## Proposed Solution
 A clear description of what you want to happen.
 
-**Architecture Area**
+## Alternative Solutions
+Any alternative solutions or workarounds you've considered.
+
+## Architecture Area
 - [ ] MOSO Core (inference, pipelines)
 - [ ] MoSo Memory Engine
 - [ ] M0S0 Assistant (personality, conversation)
-- [ ] Voice System
+- [ ] Voice System (STT/TTS)
 - [ ] Vision System
 - [ ] Recommendation Engine
-- [ ] Shared Engine
-- [ ] Platform (apps/)
-- [ ] Backend / Cloud
-- [ ] Tools / Developer Experience
+- [ ] Platform (Android/iOS/macOS/Windows/Linux)
+- [ ] Backend / Cloud Sync
+- [ ] Developer Tools
+- [ ] Documentation
 
-**Alternatives Considered**
-Any alternative solutions you've considered.
+## Privacy Impact
+How does this feature affect privacy? MOSO AI is privacy-first.
+- [ ] No privacy impact (local-only change)
+- [ ] Requires data to leave device (needs sync opt-in)
+- [ ] New data collected (requires privacy review)
 
-**Additional Context**
-Add any other context or mockups.
+## Use Case
+Describe a typical use case for this feature.
+
+## Additional Context
+Add any other context, mockups, or examples.
+
+## Community Interest
+- [ ] I would use this feature
+- [ ] I would help test this feature

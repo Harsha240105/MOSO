@@ -1,90 +1,123 @@
 # Contributing to MOSO AI
 
-We welcome contributions! MOSO AI is a privacy-first, local-first AI assistant platform. By contributing, you help us keep AI personal and private for everyone.
+## Important Legal Notice
 
-## Getting Started
+**Viewing access does not grant usage rights.**
 
-1. Read the [README](README.md) and [ROADMAP](ROADMAP.md).
-2. Check open issues for "good first issue" labels.
-3. Fork the repository and clone it.
-4. Set up your development environment (see below).
+By contributing to MOSO AI, you agree to the terms of the
+[MOSO Source Available License](LICENSE). MOSO AI is source-available, not open source.
+All code is protected by this license.
 
-## Development Setup
+## Who Can Contribute
 
-### Prerequisites
+| Role        | Can Submit PRs | Can Merge | Requires |
+|-------------|----------------|-----------|----------|
+| Public      | No             | No        | N/A      |
+| Contributor | Yes            | No        | Approval |
+| Maintainer  | Yes            | Yes       | Review   |
 
-- Git
-- Flutter SDK 3.16+
-- Python 3.11+
-- Rust 1.75+
-- Docker (optional, for backend development)
+Community members can contribute by:
+- Opening issues for bugs, feature requests, or feedback
+- Participating in GitHub Discussions
+- Providing research insights and use cases
 
-### Environment Setup
+**Only approved maintainers can push code or merge pull requests.**
 
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-
-# Install Python dependencies
-pip install -r backend/requirements.txt
-
-# Install Rust toolchain
-rustup default stable
-```
-
-## Project Structure
+## Contribution Workflow
 
 ```
-moso-ai/
-├── apps/             # Platform-specific apps
-├── shared/           # Shared engines and utilities
-├── moso-core/        # Core AI inference runtime
-├── moso-memory-engine/ # Memory and retrieval system
-├── backend/          # Cloud backend services
-├── models/           # AI model configurations
-├── docs/             # Documentation
-├── scripts/          # Build and utility scripts
-├── tests/            # All test suites
-└── tools/            # Developer tools
+Report Issue → Discuss → Assign → Create Branch → PR → Review → Merge
+   ↑                                                              |
+   └────────────────────── Community Loop ────────────────────────┘
 ```
 
-## Pull Request Process
+1. **Start with a discussion** — Open an issue or discussion before writing code
+2. **Get assigned** — A maintainer will review and assign if accepted
+3. **Branch from dev** — Create a branch following the naming convention
+4. **Write code** — Follow the coding standards below
+5. **Submit a PR** — Target the `dev` branch with a clear description
+6. **Pass all checks** — CI, lint, tests, and maintainer approval required
+7. **Merge** — Only maintainers can merge after approvals
 
-1. Create a feature branch from `main`.
-2. Make your changes following the coding style.
-3. Add or update tests as needed.
-4. Run tests locally: see specific test runner in each module's README.
-5. Submit a PR with a clear description of changes.
+## Branch Naming Convention
+
+```
+feature/   — New features        (e.g., feature/voice-wake-word)
+hotfix/    — Critical fixes      (e.g., hotfix/crash-on-startup)
+bugfix/    — Bug fixes           (e.g., bugfix/memory-leak)
+docs/      — Documentation       (e.g., docs/api-ref-update)
+refactor/  — Code refactoring    (e.g., refactor/inference-engine)
+```
+
+## Pull Request Requirements
+
+- PRs must target the `dev` branch (never `main` directly)
+- At least **2 maintainer approvals** required for merge
+- All **status checks must pass** before merge
+- **Signed commits** (GPG or SSH) required
+- PR description must include:
+  - What the change does
+  - Why it's needed
+  - Testing performed
+  - Privacy/security impact assessment
 
 ## Coding Standards
 
-- **Dart/Flutter:** Follow [Effective Dart](https://dart.dev/effective-dart) guidelines.
-- **Python:** Follow [PEP 8](https://peps.python.org/pep-0008/), use type hints.
-- **Rust:** Follow [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/).
-- **Documentation:** All public APIs must have doc comments.
-- **Privacy:** Never log or expose user data. Use the encryption utilities for any data persistence.
+### General
+- Follow the existing code style in the repository
+- Write clear, self-documenting code (avoid unnecessary comments)
+- Include type annotations where applicable
+- Keep functions small and focused
 
-## Commit Messages
+### Python
+- Follow [PEP 8](https://peps.python.org/pep-0008/)
+- Use type hints for all function signatures
+- Use `black` for formatting, `isort` for import ordering
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+### Rust
+- Follow [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/)
+- Run `cargo clippy` and `cargo fmt` before submitting
+- No `unsafe` code without explicit review
+
+### Flutter / Dart
+- Follow [Effective Dart](https://dart.dev/effective-dart)
+- Use `dart format` before committing
+
+## Commit Message Convention
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
-feat(memory): add episodic memory retrieval
-fix(core): resolve crash on model load
-docs: update architecture diagram
+type(scope): description
+
+[optional body]
+
+[optional footer]
 ```
 
-## Testing
+Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`, `security`
 
-- **Unit tests:** Required for all new code.
-- **Integration tests:** Required for cross-component changes.
-- **AI evaluation tests:** Required for model/pipeline changes.
-- **Performance benchmarks:** Required for inference engine changes.
+Examples:
+```
+feat(memory): add episodic memory consolidation
+fix(core): resolve crash on GGUF model load
+security(auth): patch prompt injection vector
+```
 
-## Architecture Review
+## Review Process
 
-Significant changes affecting architecture require review from the core team. Please tag `@moso-core` on your PR.
+1. Maintainer reviews the PR within 72 hours
+2. Feedback is provided as inline comments
+3. Author addresses feedback with additional commits
+4. Second maintainer does final approval
+5. Maintainer merges into `dev`
+6. Staging merges occur on a weekly schedule
+7. Maintainers approve production releases to `main`
 
-## License
+## Code of Conduct
 
-By contributing, you agree that your contributions will be licensed under the MIT License.
+All contributors must adhere to our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Questions?
+
+Open a GitHub Discussion with the "contributing" category tag.
