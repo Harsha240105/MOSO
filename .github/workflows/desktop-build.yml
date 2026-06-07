@@ -1,0 +1,42 @@
+name: Desktop Build (macOS)
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "apps/macos/**"
+      - "shared/**"
+      - ".github/workflows/desktop-build.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/macos/**"
+      - "shared/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.16"
+
+      - name: Build macOS App
+        run: |
+          cd apps/macos
+          flutter config --enable-macos-desktop
+          flutter build macos --debug
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: moso-macos-debug
+          path: apps/macos/build/macos/Build/Products/Debug/
