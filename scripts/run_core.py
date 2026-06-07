@@ -2,10 +2,11 @@
 MOSO Core - Interactive CLI Demo
 
 Usage:
-    python -m scripts.run_core --model <path/to/model.gguf>
+    python -m scripts.run_core --model <path/to/model> [--backend llama|onnx]
 
-Example:
+Examples:
     python -m scripts.run_core --model models/llm/phi3/Phi-3-mini-4k-instruct-q4.gguf
+    python -m scripts.run_core --model path/to/model.onnx --backend onnx
 """
 
 import argparse
@@ -23,10 +24,12 @@ logger = logging.getLogger("run_core")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="MOSO Core CLI Demo")
-    parser.add_argument("--model", required=True, help="Path to GGUF model file")
+    parser.add_argument("--model", required=True, help="Path to model file or directory")
+    parser.add_argument("--backend", default="llama", choices=["llama", "onnx"],
+                        help="Inference backend to use (default: llama)")
     parser.add_argument("--no-safety", action="store_true", help="Disable safety guards")
     parser.add_argument("--ctx", type=int, default=2048, help="Context window size")
-    parser.add_argument("--gpu-layers", type=int, default=0, help="GPU layers to offload")
+    parser.add_argument("--gpu-layers", type=int, default=0, help="GPU layers to offload (llama.cpp only)")
     parser.add_argument("--max-tokens", type=int, default=512, help="Max tokens per response")
     parser.add_argument("--agent", action="store_true", help="Use agent mode")
     return parser.parse_args()
@@ -123,7 +126,7 @@ def main():
     logger.info("Initializing MOSO Core with model: %s", args.model)
     start = time.perf_counter()
 
-    with Orchestrator(config=config, enable_safety=not args.no_safety) as orchestrator:
+    with Orchestrator(config=config, enable_safety=not args.no_safety, backend=args.backend) as orchestrator:
         elapsed = time.perf_counter() - start
         logger.info("MOSO Core ready in %.2fs", elapsed)
 

@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Type, Union
 
 from moso_core.inference.base import InferenceConfig, ModelBackend
 from moso_core.inference.llama_cpp.backend import LlamaCPPBackend
@@ -9,6 +9,20 @@ from moso_core.pipelines.text.pipeline import TextPipeline
 from moso_core.safety.guardrails import OutputGuard, PromptGuard
 
 logger = logging.getLogger(__name__)
+
+BACKEND_REGISTRY: dict[str, Type[ModelBackend]] = {
+    "llama": LlamaCPPBackend,
+}
+
+try:
+    from moso_core.inference.onnx_runtime.backend import OnnxRuntimeBackend
+    BACKEND_REGISTRY["onnx"] = OnnxRuntimeBackend
+except ImportError:
+    pass
+
+
+def register_backend(name: str, backend_cls: Type[ModelBackend]) -> None:
+    BACKEND_REGISTRY[name] = backend_cls
 
 
 class Modality(str, Enum):
@@ -25,9 +39,11 @@ class Orchestrator:
         config: InferenceConfig,
         system_prompt: Optional[str] = None,
         enable_safety: bool = True,
+        backend: Union[str, Type[ModelBackend], ModelBackend, None] = None,
     ):
         self._config = config
         self._backend: Optional[ModelBackend] = None
+        self._backend_source = backend
         self._pipelines: dict[Modality, Pipeline] = {}
         self._prompt_guard = PromptGuard() if enable_safety else None
         self._output_guard = OutputGuard() if enable_safety else None
@@ -98,8 +114,24 @@ class Orchestrator:
         return self._pipelines[modality]
 
     def _get_or_create_backend(self) -> ModelBackend:
-        if self._backend is None:
+        if self._backend is not None:
+            return self._backend
+
+        if isinstance(self._backend_source, ModelBackend):
+            self._backend = self._backend_source
+        elif isinstance(self._backend_source, str):
+            cls = BACKEND_REGISTRY.get(self._backend_source)
+            if cls is None:
+                raise ValueError(
+                    f"Unknown backend '{self._backend_source}'. "
+                    f"Available: {list(BACKEND_REGISTRY.keys())}"
+                )
+            self._backend = cls(self._config)
+        elif isinstance(self._backend_source, type) and issubclass(self._backend_source, ModelBackend):
+            self._backend = self._backend_source(self._config)
+        else:
             self._backend = LlamaCPPBackend(self._config)
+
         return self._backend
 
     def __enter__(self):

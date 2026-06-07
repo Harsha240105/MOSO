@@ -13,6 +13,12 @@ __version__ = "0.1.0"
 
 from moso_core.inference.base import GenerationResult, GenerationStats, InferenceConfig, ModelBackend
 from moso_core.inference.llama_cpp.backend import LlamaCPPBackend
+
+try:
+    from moso_core.inference.onnx_runtime.backend import OnnxRuntimeBackend
+except ImportError:
+    OnnxRuntimeBackend = None  # noqa: F811
+
 from moso_core.orchestration.orchestrator import Modality, Orchestrator
 from moso_core.pipelines.base import Pipeline, PipelineResult
 from moso_core.pipelines.text.pipeline import TextPipeline
@@ -24,6 +30,7 @@ __all__ = [
     "GenerationResult",
     "GenerationStats",
     "LlamaCPPBackend",
+    "OnnxRuntimeBackend",
     "Pipeline",
     "PipelineResult",
     "TextPipeline",
