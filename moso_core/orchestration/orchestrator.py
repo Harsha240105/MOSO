@@ -5,12 +5,16 @@ from typing import Iterator, Optional, Type, Union
 from typing import TYPE_CHECKING, Optional
 
 from moso_core.inference.base import InferenceConfig, ModelBackend
-from moso_core.inference.llama_cpp.backend import LlamaCPPBackend
+try:
+    from moso_core.inference.llama_cpp.backend import LlamaCPPBackend
+except ImportError:
+    LlamaCPPBackend = None  # noqa: F811
 from moso_core.pipelines.base import Pipeline, PipelineResult
 from moso_core.pipelines.text.pipeline import TextPipeline
 from moso_core.safety.guardrails import OutputGuard, PromptGuard
 
 if TYPE_CHECKING:
+    from moso_core.agents.manager import AgentManager
     from moso_core.memory.manager import MemoryManager
     from moso_core.resources.manager import ResourceManager
     from moso_core.tools.registry import ToolRegistry
@@ -19,9 +23,13 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-BACKEND_REGISTRY: dict[str, Type[ModelBackend]] = {
-    "llama": LlamaCPPBackend,
-}
+BACKEND_REGISTRY: dict[str, Type[ModelBackend]] = {}
+
+try:
+    from moso_core.inference.llama_cpp.backend import LlamaCPPBackend
+    BACKEND_REGISTRY["llama"] = LlamaCPPBackend
+except ImportError:
+    pass
 
 try:
     from moso_core.inference.onnx_runtime.backend import OnnxRuntimeBackend
@@ -68,6 +76,7 @@ class Orchestrator:
         self._memory: Optional[MemoryManager] = None
         self._resources: Optional[ResourceManager] = None
         self._tool_registry: Optional[ToolRegistry] = None
+        self._agent_manager: Optional[AgentManager] = None
 
     def process(self, prompt: str, modality: Modality = Modality.TEXT, **kwargs) -> PipelineResult:
         if self._prompt_guard:
@@ -247,6 +256,23 @@ class Orchestrator:
     def tools(self) -> Optional[ToolRegistry]:
         return self._tool_registry
 
+    def enable_agents(self) -> None:
+        try:
+            from moso_core.agents.manager import AgentManager
+            self._agent_manager = AgentManager(
+                tool_registry=self._tool_registry,
+                identity=self._identity_verifier,
+                memory=self._memory,
+                resources=self._resources,
+            )
+            logger.info("Agent planner enabled")
+        except Exception as e:
+            logger.warning("Agent planner not available: %s", e)
+
+    @property
+    def agents(self) -> Optional[AgentManager]:
+        return self._agent_manager
+
     def get_identity_confidence(self) -> float:
         if self._identity_verifier is None:
             return 0.0
@@ -312,7 +338,11 @@ class Orchestrator:
         elif isinstance(self._backend_source, type) and issubclass(self._backend_source, ModelBackend):
             self._backend = self._backend_source(self._config)
         else:
-            self._backend = LlamaCPPBackend(self._config)
+            if BACKEND_REGISTRY:
+                cls = next(iter(BACKEND_REGISTRY.values()))
+                self._backend = cls(self._config)
+            else:
+                raise ValueError("No model backends available. Install llama-cpp-python or onnxruntime.")
 
         return self._backend
 

@@ -9,7 +9,11 @@ The core inference engine supporting:
 __version__ = "0.2.0"
 
 from moso_core.inference.base import GenerationResult, GenerationStats, InferenceConfig, ModelBackend
-from moso_core.inference.llama_cpp.backend import LlamaCPPBackend
+
+try:
+    from moso_core.inference.llama_cpp.backend import LlamaCPPBackend
+except ImportError:
+    LlamaCPPBackend = None  # noqa: F811
 
 try:
     from moso_core.inference.onnx_runtime.backend import OnnxRuntimeBackend
@@ -81,6 +85,12 @@ try:
 except ImportError:
     TOOLS_AVAILABLE = False
 
+try:
+    from moso_core.agents import AGENTS_AVAILABLE as _agents_flag
+    AGENTS_AVAILABLE = _agents_flag
+except ImportError:
+    AGENTS_AVAILABLE = False
+
 __all__ = [
     "InferenceConfig",
     "ModelBackend",
@@ -103,4 +113,5 @@ __all__ = [
     "ResourceManager",
     "TOOLS_AVAILABLE",
     "ToolRegistry",
+    "AGENTS_AVAILABLE",
 ]
