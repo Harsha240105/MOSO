@@ -103,6 +103,12 @@ try:
 except ImportError:
     VISION_AVAILABLE = False
 
+try:
+    from moso_core.llm import LLM_AVAILABLE as _llm_flag, LLMConfig, LLMManager, LlamaServer
+    LLM_AVAILABLE = _llm_flag
+except ImportError:
+    LLM_AVAILABLE = False
+
 __all__ = [
     "InferenceConfig",
     "ModelBackend",
@@ -128,4 +134,8 @@ __all__ = [
     "AGENTS_AVAILABLE",
     "COMPUTER_USE_AVAILABLE",
     "VISION_AVAILABLE",
+    "LLM_AVAILABLE",
+    "LLMConfig",
+    "LLMManager",
+    "LlamaServer",
 ]

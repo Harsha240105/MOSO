@@ -16,6 +16,7 @@ from moso_core.safety.guardrails import OutputGuard, PromptGuard
 if TYPE_CHECKING:
     from moso_core.agents.manager import AgentManager
     from moso_core.computer_use.automation import AutomationEngine
+    from moso_core.llm.manager import LLMManager
     from moso_core.memory.manager import MemoryManager
     from moso_core.resources.manager import ResourceManager
     from moso_core.tools.registry import ToolRegistry
@@ -81,6 +82,7 @@ class Orchestrator:
         self._agent_manager: Optional[AgentManager] = None
         self._computer_use: Optional[AutomationEngine] = None
         self._vision: Optional[VisionManager] = None
+        self._llm: Optional[LLMManager] = None
 
     def process(self, prompt: str, modality: Modality = Modality.TEXT, **kwargs) -> PipelineResult:
         if self._prompt_guard:
@@ -312,6 +314,30 @@ class Orchestrator:
     @property
     def vision(self) -> Optional[VisionManager]:
         return self._vision
+
+    def enable_llm(self, model_path: str = "", n_ctx: int = 2048, server_port: int = 8081) -> None:
+        try:
+            from moso_core.llm.models import LLMConfig
+            from moso_core.llm.manager import LLMManager
+            config = LLMConfig(
+                model_path=model_path,
+                n_ctx=n_ctx,
+                server_port=server_port,
+            )
+            self._llm = LLMManager(config)
+            logger.info("LLM engine enabled (model: %s)", model_path or "not set")
+        except Exception as e:
+            logger.warning("LLM engine not available: %s", e)
+
+    @property
+    def llm(self) -> Optional[LLMManager]:
+        return self._llm
+
+    def llm_complete(self, prompt: str, system_prompt: str = "") -> str:
+        if self._llm is None:
+            return "LLM engine not enabled. Call enable_llm() first."
+        resp = self._llm.complete(prompt, system_prompt=system_prompt)
+        return resp.text
 
     def get_identity_confidence(self) -> float:
         if self._identity_verifier is None:

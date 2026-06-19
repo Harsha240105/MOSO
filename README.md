@@ -102,6 +102,8 @@
 | **Tool Engine** | ✅ V1 | File ops, apps, browser, terminal — structured tool execution |
 | **Computer Use** | ✅ V1 | Mouse, keyboard, screen capture, window management, automation, recorder |
 | **Screen Vision** | ✅ V1 | Screenshot OCR, active window detection, screen context generation |
+| **LLM Integration** | ✅ V1 | llama.cpp server binary — subprocess HTTP backend, chat, completion |
+| **Aura UI** | ✅ V1 | Floating desktop orb — PySide6, always-on-top, states, tray, conversation bubble |
 
 ---
 
@@ -117,6 +119,8 @@
 6. **Agent Planner** — MOSO can plan: decompose goals into sequential tasks using template matching (python project, folder, app, web search, file read/write), execute via Tool Engine, verify each task, retry on failure, check dependencies, and persist history to SQLite
 7. **Computer Use** — MOSO can operate desktop software like a human: move mouse, click buttons, type text, press keyboard shortcuts, capture screenshots, focus windows, execute action sequences, and record workflows
 8. **Screen Vision** — MOSO can see your screen: OCR text extraction, text region detection, active window identification, and screen context assembly — all observation-only, no clicking or ML
+9. **LLM Integration** — MOSO connects to a local llama.cpp server binary for text generation and chat. Download a GGUF model and start reasoning
+10. **Aura UI** — MOSO lives on your desktop as a floating orb. Always-on-top, draggable, with status animations (idle/listening/thinking/executing/error), system tray, and conversation bubbles
 
 Everything runs locally — no cloud dependency, no data leaves your device.
 
@@ -137,13 +141,22 @@ Everything runs locally — no cloud dependency, no data leaves your device.
 │        └──────┬─────┘                                            │
 │               ▼                                                  │
 │  ┌──────────────────────────────────────────────────────┐       │
+│  │              Aura UI (Desktop Orb)                    │       │
+│  │        Floating Circle  │  Tray  │  Bubble             │       │
+│  └──────────────────────────┬───────────────────────────┘       │
+│                             ▼                                    │
+│  ┌──────────────────────────────────────────────────────┐       │
 │  │              Pipeline Orchestrator                    │       │
 │  │         Text  →  Voice  →  Identity                   │       │
 │  └──────────────────────┬───────────────────────────────┘       │
 │                         ▼                                        │
 │  ┌──────────────────────────────────────────────────────────┐   │
+│  │                   LLM Integration                        │   │
+│  │  llama.cpp Server  │  Chat  │  Completion  │  Download   │   │
+│  └──────────────────────────┬───────────────────────────────┘   │
+│                             ▼                                    │
+│  ┌──────────────────────────────────────────────────────────┐   │
 │  │                   Agent Planner                           │   │
-│  │  Planner  │  Executor  │  Verifier  │  History (SQLite)   │   │
 │  └──────────────────────────┬───────────────────────────────┘   │
 │                         ▼                                        │
 │  ┌──────────────────────────────────────────────────────────┐   │
@@ -204,6 +217,8 @@ The foundational runtime that powers all AI inference across platforms with mult
 | **Agents** | Planner, Executor, Verifier, History | Template-based goal decomposition with retry + dependencies + dry-run |
 | **Computer Use** | Mouse, Keyboard, Screen, Windows, Automation, Recorder | Desktop automation — pyautogui, mss, pygetwindow |
 | **Screen Vision** | OCR, Text Regions, Window Detection, Context | Screenshot OCR — pytesseract, mss, pygetwindow |
+| **LLM Integration** | Server, Chat, Completion | llama.cpp server binary — subprocess HTTP backend |
+| **Aura UI** | Floating Orb, Conversation Bubble, Tray | Desktop overlay — PySide6 |
 
 ### M0S0 Assistant — Adaptive Personality
 
@@ -885,6 +900,121 @@ print(result["text_content"])
 - No Computer Use integration (Vision finds button → CU clicks)
 - No self-healing automation
 
+---
+
+### LLM Integration
+
+**MOSO LLM Integration** connects a local llama.cpp server binary for text generation:
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   LLMManager                         │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │               LlamaServer                     │   │
+│  │                                               │   │
+│  │  start() → launches llama-server.exe         │   │
+│  │  complete() → POST /completion               │   │
+│  │  chat() → chat context builder + complete     │   │
+│  │  stop() → terminates server                   │   │
+│  └──────────────────┬───────────────────────────┘   │
+│                     ▼                                │
+│  ┌──────────────────────────────────────────────┐   │
+│  │           llama-server.exe (subprocess)       │   │
+│  │  HTTP API at http://127.0.0.1:8081           │   │
+│  │  /health  →  health check                     │   │
+│  │  /completion  →  text generation              │   │
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+```
+
+**Setup:**
+
+1. Download a GGUF model:
+```
+python scripts/download_model.py qwen3-8b
+```
+
+2. Use via Orchestrator:
+```python
+orchestrator.enable_llm(model_path="models/qwen3-8b-q4_k_m.gguf")
+orchestrator.llm.start()
+response = orchestrator.llm.chat("What is MOSO?")
+print(response)
+```
+
+Or standalone:
+```python
+from moso_core.llm import LLMManager, LLMConfig
+mgr = LLMManager(LLMConfig(model_path="models/model.gguf"))
+mgr.start()
+print(mgr.complete("Hello!").text)
+```
+
+**Supported Models:** Any GGUF format model (Qwen 3 8B, Llama 3.1 8B, Gemma 3 12B, Phi-3 Mini, etc.)
+
+---
+
+### Aura UI
+
+**MOSO Aura UI** is a floating desktop orb that gives MOSO a visible presence:
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   AuraApp                            │
+│                                                      │
+│  ┌──────────────────┐  ┌────────────────────────┐  │
+│  │    AuraOrb        │  │   ConversationBubble    │  │
+│  │                   │  │                        │  │
+│  │   ⚪ Idle         │  │  ┌──────────────────┐ │  │
+│  │   🔵 Listening    │  │  │ MOSO says...     │ │  │
+│  │   🟢 Thinking     │  │  │                  │ │  │
+│  │   🟣 Speaking     │  │  │  [X] close       │ │  │
+│  │   🟡 Executing    │  │  └──────────────────┘ │  │
+│  │   🔴 Error        │  │                        │  │
+│  └──────────────────┘  └────────────────────────┘  │
+│                                                      │
+│  ┌──────────────────┐  ┌────────────────────────┐  │
+│  │   SystemTray      │  │   AuraSettings         │  │
+│  │  Show Orb         │  │  orb position          │  │
+│  │  Settings         │  │  model path            │  │
+│  │  Quit             │  │  server config         │  │
+│  └──────────────────┘  └────────────────────────┘  │
+└─────────────────────────────────────────────────────┘
+```
+
+**Orb States:**
+
+| State | Color | Animation | Description |
+|-------|-------|-----------|-------------|
+| **Idle** | Gray | Static | Waiting |
+| **Listening** | Blue | Rotating gradient + glow | Capturing audio/input |
+| **Thinking** | Green | Pulsing + orbiting dots | LLM generating |
+| **Speaking** | Purple | Expanding rings | TTS playing |
+| **Executing** | Yellow | Spinning arc | Tool/action running |
+| **Error** | Red | X icon | Something failed |
+
+**Usage:**
+
+```python
+python -m moso_ui.main
+```
+
+Or from your own code:
+```python
+from moso_ui.main import AuraApp
+app = AuraApp()
+app.run()
+```
+
+**Features:**
+- 100px transparent circle, always-on-top
+- Draggable — click and drag to reposition
+- Double-click or right-click to open conversation bubble
+- System tray icon with Show/Settings/Quit
+- Position persists between sessions (~/.moso/aura_settings.json)
+- Settings dialog for model path, server port, context size
+
 <table>
   <tr>
     <th>Layer</th>
@@ -1030,8 +1160,23 @@ moso-core/                  # AI runtime, voice, identity, memory
 │   ├── manager.py          # AgentManager facade — plan, execute, list templates
 │   ├── models.py           # Goal, Task, Plan, ExecutionSummary dataclasses
 │   └── __init__.py         # Exports + AGENTS_AVAILABLE flag
+├── llm/                    # Local LLM integration
+│   ├── backend.py          # LlamaServer — subprocess llama-server.exe wrapper
+│   ├── manager.py          # LLMManager — chat, complete, lifecycle
+│   ├── models.py           # LLMConfig, LLMRequest, LLMResponse dataclasses
+│   └── __init__.py         # Exports + LLM_AVAILABLE flag
 └── safety/                 # Guardrails & content filtering
 ```
+
+```
+moso_ui/                    # Desktop overlay — Aura UI
+├── aura_orb.py             # Floating transparent orb (PySide6)
+├── conversation.py         # Speech bubble overlay
+├── states.py               # OrbState + StatusColor enums
+├── tray.py                 # System tray icon + menu
+├── settings.py             # Persistent settings (~/.moso/aura_settings.json)
+├── main.py                 # App entry point
+└── __init__.py             # Exports
 
 ---
 
@@ -1062,6 +1207,7 @@ feature/*   ─── New features (branched from main, PR to merge)
 | **Phase 7** — Agent System | Template-based goal decomposition, task execution, retry, dependencies, dry-run | ✅ Complete |
 | **Phase 8** — Computer Use | Mouse, keyboard, screen capture, window management, automation, recorder | ✅ Complete |
 | **Phase 9** — Vision V1 | Screenshot OCR, text region detection, active window detection, screen context | ✅ Complete |
+| **Phase 10** — LLM + Aura UI | llama.cpp server binary integration, floating desktop orb with PySide6 | ✅ Complete |
 
 ---
 
@@ -1141,6 +1287,23 @@ ctx = orchestrator.vision.build_context()
 print(f"Active window: {ctx.active_window}")
 print(f"Screen text: {ctx.text_content[:100]}...")
 print(ctx.summary())
+
+# MOSO can run a local LLM:
+orchestrator.enable_llm(model_path="models/qwen3-8b-q4_k_m.gguf")
+if orchestrator.llm and orchestrator.llm.start():
+    print(orchestrator.llm.chat("What is MOSO?"))
+```
+
+**Desktop Aura UI:**
+```bash
+pip install PySide6
+python -m moso_ui.main
+```
+
+**Model Download:**
+```bash
+python scripts/download_model.py qwen3-8b      # ~5.2 GB
+python scripts/download_model.py phi3-mini      # ~2.3 GB (lightweight)
 ```
 
 **Voice Mode:**

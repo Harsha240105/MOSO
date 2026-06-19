@@ -86,6 +86,9 @@ release/
 debug/
 coverage/
 
+# Binary server executables (download separately)
+llama-bin/
+
 # Database
 *.db
 *.sqlite
