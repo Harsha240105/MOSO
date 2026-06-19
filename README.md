@@ -40,6 +40,7 @@
 <a href="#"><img src="https://img.shields.io/badge/Identity-Multi--Signal-2ecc71?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTIgMjJsLTctNC4xVjVjMC0zLjMgMi43LTYgNi02czYgMi43IDYgNnYxMi45TDcgMjJ6Ii8+PC9zdmc+" alt="Identity"/></a>
 <a href="#"><img src="https://img.shields.io/badge/Memory-Persistent-f39c12?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTIiIHJ4PSIyIi8+PHBhdGggZD0iTTIyIDEwSDJ2M2gyMGwwLTMiLz48bGluZSB4MT0iMTIiIHkxPSI2IiB4Mj0iMTIiIHkyPSIxOCIvPjwvc3ZnPg==" alt="Memory"/></a>
 <a href="#"><img src="https://img.shields.io/badge/Resources-Monitoring-e67e22?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSIyIi8+PGxpbmUgeDE9IjkiIHkxPSIxMiIgeDI9IjE1IiB5Mj0iMTIiLz48bGluZSB4MT0iMTIiIHkxPSI5IiB4Mj0iMTIiIHkyPSIxNSIvPjwvc3ZnPg==" alt="Resources"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Tools-Action%20Ready-e74c3c?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTQgMkg2YTIgMiAwIDAgMC0yIDJ2MTZhMiAyIDAgMCAwIDIgMmgxMmEyIDIgMCAwIDAgMi0yVjh6Ii8+PHBvbHlsaW5lIHBvaW50cz0iMTQgMiAxNCA4IDIwIDgiLz48bGluZSB4MT0iMTIiIHkxPSIxMiIgeDI9IjEyIiB5Mj0iMTYiLz48bGluZSB4MT0iOSIgeTE9IjE0IiB4Mj0iMTUiIHkyPSIxNCIvPjwvc3ZnPg==" alt="Tools"/></a>
 
 <br/>
 <br/>
@@ -98,18 +99,19 @@
 | **Embeddings / Vector Search** | 🔄 V2 | Planned for next release |
 | **GPU Monitoring** | 🔄 V2 | pynvml integration planned |
 | **Agent System** | 🔄 In Progress | Goal decomposition, tool use |
-| **Tool Engine** | 📋 Planned | OS actions, file ops, browser, workflows |
+| **Tool Engine** | ✅ V1 | File ops, apps, browser, terminal — structured tool execution |
 
 ---
 
 ## ✧ What is MOSO?
 
-**MOSO (M0S0)** is a **privacy-first**, **local-first** adaptive AI assistant that runs entirely on your device. It is built in four layers:
+**MOSO (M0S0)** is a **privacy-first**, **local-first** adaptive AI assistant that runs entirely on your device. It is built in five layers:
 
 1. **Voice Pipeline** — Talk to MOSO hands-free: wake word detection, speaker verification, speech-to-text, LLM reasoning, text-to-speech with optional voice cloning
 2. **Identity Engine** — MOSO knows who you are using 5 weighted signals (voice, liveness, behavior, device, history). Replay/synthetic audio is rejected. Confidence scoring determines permission levels from guest to full owner
 3. **Memory Engine** — MOSO remembers across sessions: past conversations (episodic), facts about you (semantic), how to do things (procedural), and your preferences. All stored locally in SQLite
 4. **Resource Manager** — MOSO understands its environment: CPU usage, RAM available, storage space, battery level, network speeds, and running processes. This lets it answer "can I run X?" before attempting a task
+5. **Tool Engine** — MOSO can act: open applications, create and read files, search the web, and run terminal commands. Every action is permission-gated, audit-logged, and remembered. Dry-run mode lets you preview before executing
 
 Everything runs locally — no cloud dependency, no data leaves your device.
 
@@ -148,6 +150,12 @@ Everything runs locally — no cloud dependency, no data leaves your device.
 │  │  CPU  │  RAM  │  Storage  │  Battery  │  Network  │ Procs│   │
 │  └──────────────────────────┬───────────────────────────────┘   │
 │                             ▼                                    │
+│                             ▼                                    │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                   Tool Engine                             │   │
+│  │  File │  Apps  │  Browser  │  Terminal  │  Audit Logger    │   │
+│  └──────────────────────────┬───────────────────────────────┘   │
+│                             ▼                                    │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │   SQLite (WAL)  │  psutil  │  File System  │  Audio I/O   │   │
 │  └──────────────────────────────────────────────────────────┘   │
@@ -173,6 +181,7 @@ The foundational runtime that powers all AI inference across platforms with mult
 | **Identity** | Voice (35%), Liveness (20%), Behavior (20%), Device (15%), History (10%) | Multi-signal owner verification engine |
 | **Memory** | Episodic, Semantic, Procedural, Preferences | SQLite-persistent cross-session memory |
 | **Resources** | CPU, RAM, Storage, Battery, Network, Processes | psutil-based local resource monitoring |
+| **Tools** | File, Apps, Browser, Terminal | Permission-gated OS actions with audit logging + dry-run |
 
 ### M0S0 Assistant — Adaptive Personality
 
@@ -368,7 +377,95 @@ orchestrator.resources.get_top_cpu_processes(5)   # top 5 CPU hogs
 
 ---
 
-## ✧ Tech Stack
+### Tool Engine
+
+**MOSO Tool Engine** provides a secure, structured framework for MOSO to interact with your operating system:
+
+- **FileTool** — Read, create, find, list, move, and delete files
+- **AppTool** — Launch, close, and list running applications
+- **BrowserTool** — Open URLs and search the web
+- **TerminalTool** — Execute terminal commands with timeout and output capture
+
+**Every action is permission-gated:**
+
+| Tool | Guest | Trusted | Owner |
+|------|:-----:|:-------:|:-----:|
+| **FileTool** — read, list, find | ✅ | ✅ | ✅ |
+| **FileTool** — create, move | — | ✅ | ✅ |
+| **FileTool** — delete | — | — | ✅ |
+| **AppTool** — list | ✅ | ✅ | ✅ |
+| **AppTool** — launch | — | ✅ | ✅ |
+| **AppTool** — close | — | — | ✅ |
+| **BrowserTool** — all | ✅ | ✅ | ✅ |
+| **TerminalTool** — execute | — | — | ✅ |
+
+**Before running, MOSO checks:**
+
+```
+Request → Permission Check → Validation → [Dry Run?] → Execute → Audit Log → Memory
+```
+
+**Dry-run mode** lets you preview without executing:
+```python
+request = ToolRequest(
+    tool_name="file_tool",
+    dry_run=True,
+    parameters={"action": "delete_file", "path": "/downloads"},
+)
+# → "[DRY RUN] Would execute: file_tool: delete_file -> /downloads"
+```
+
+**Orchestrator Integration:**
+```python
+orchestrator.enable_tools()
+orchestrator.enable_memory()
+orchestrator.enable_identity()
+
+req = ToolRequest(
+    tool_name="app_tool",
+    parameters={"action": "launch_application", "app_name": "code"},
+)
+result = orchestrator.tools.execute_tool(req, identity=orchestrator.identity_verifier)
+# → Launches VS Code, logged to audit + memory with tags: [tool, app_tool, app, launch_application, code]
+
+req2 = ToolRequest(
+    tool_name="browser_tool",
+    parameters={"action": "search_web", "query": "Python async tutorial"},
+)
+result = orchestrator.tools.execute_tool(req2)
+# → Opens DuckDuckGo in browser
+
+req3 = ToolRequest(
+    tool_name="terminal_tool",
+    parameters={"action": "execute_command", "command": "python --version"},
+)
+result = orchestrator.tools.execute_tool(req3, identity=orchestrator.identity_verifier)
+# → Owner verified → returns "Python 3.11.5"
+```
+
+**Architecture:**
+```
+┌─────────────────────────────────────────────────────┐
+│                    Tool Engine                       │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │               ToolRegistry                    │   │
+│  │  register  │  lookup  │  execute  │  list     │   │
+│  └──────┬────────────────────────────────┬───────┘   │
+│         │                                │            │
+│  ┌──────▼──────┐  ┌──────────────────────▼───────┐   │
+│  │    Tools     │  │         AuditLogger          │   │
+│  │             │  │  ~/.moso/tools-audit.log     │   │
+│  │  FileTool   │  │  JSON lines, rotate-ready    │   │
+│  │  AppTool    │  └──────────────────────────────┘   │
+│  │  BrowserTool│                                      │
+│  │  TerminalTool│                                     │
+│  └─────────────┘                                      │
+│                                                      │
+│  Integrations: Identity → Permission Check           │
+│                Memory → Tagged Event Logging         │
+└─────────────────────────────────────────────────────┘
+```
 
 <table>
   <tr>
@@ -480,6 +577,15 @@ moso-core/                  # AI runtime, voice, identity, memory
 │   ├── network.py          # NetworkMonitor (bytes, speed)
 │   ├── processes.py        # ProcessMonitor (top CPU/mem)
 │   └── models.py           # Resource dataclasses
+├── tools/                  # Tool engine — OS actions
+│   ├── registry.py         # ToolRegistry — register, lookup, execute
+│   ├── base.py             # Tool ABC with permission_level support
+│   ├── models.py           # ToolResult, ToolRequest (with dry_run), AuditEntry
+│   ├── audit.py            # AuditLogger — JSON lines at ~/.moso/tools-audit.log
+│   ├── file_tool.py        # FileTool — read, create, find, list, move, delete
+│   ├── app_tool.py         # AppTool — launch, close, list running apps
+│   ├── browser_tool.py     # BrowserTool — open URLs, search web
+│   └── terminal_tool.py    # TerminalTool — commands with timeout + output cap
 ├── orchestration/          # Dynamic pipeline composition
 ├── agents/                 # Autonomous agent system
 └── safety/                 # Guardrails & content filtering
@@ -509,8 +615,9 @@ feature/*   ─── New features (branched from main, PR to merge)
 | **Phase 2** — Identity Engine | 5-signal owner verification, anti-spoof, permissions | ✅ Complete |
 | **Phase 3** — Memory Engine | Episodic + semantic + procedural + preferences, SQLite | ✅ Complete |
 | **Phase 4** — Resource Manager | CPU, RAM, storage, battery, network, process monitoring | ✅ Complete |
-| **Phase 5** — Intelligence | Embeddings + vector search, GPU monitoring, RAG | 🔄 Next |
-| **Phase 6** — Tool Engine | OS actions, file ops, browser, workflows | 📋 Future |
+| **Phase 5** — Tool Engine | File ops, apps, browser, terminal — permission-gated + audit-logged | ✅ Complete |
+| **Phase 6** — Intelligence | Embeddings + vector search, GPU monitoring, RAG | 🔄 Next |
+| **Phase 7** — Agent System | Goal decomposition, task planning, autonomous tool chaining | 📋 Future |
 
 ---
 
@@ -538,17 +645,35 @@ Without explicit written permission, you may NOT:
 ```python
 from moso_core.inference.base import InferenceConfig
 from moso_core.orchestration.orchestrator import Orchestrator
+from moso_core.tools.models import ToolRequest
 
 config = InferenceConfig(model_path="path/to/model.gguf")
 orchestrator = Orchestrator(config)
+
+# Enable all engines
 orchestrator.enable_memory()      # SQLite at ~/.moso/memory.db
 orchestrator.enable_identity()    # Owner verification
+orchestrator.enable_resources()   # CPU, RAM, battery monitoring
+orchestrator.enable_tools()       # File, app, browser, terminal
+
+# Talk to MOSO
 result = orchestrator.process("Hello, remember my name is Harsha")
 print(result.text)
 
-# MOSO now knows this fact across restarts:
-result2 = orchestrator.process("What is my name?")
-print(result2.text)  # → Recalls from semantic memory
+# MOSO can now act on your behalf:
+req = ToolRequest(
+    tool_name="app_tool",
+    parameters={"action": "launch_application", "app_name": "code"},
+)
+result = orchestrator.tools.execute_tool(req, identity=orchestrator.identity_verifier)
+# → Launches VS Code, logged to memory + audit log
+
+req2 = ToolRequest(
+    tool_name="file_tool",
+    parameters={"action": "read_file", "path": "notes.txt"},
+)
+result = orchestrator.tools.execute_tool(req2)
+# → Returns file content
 ```
 
 **Voice Mode:**

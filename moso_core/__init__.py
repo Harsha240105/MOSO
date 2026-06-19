@@ -75,6 +75,12 @@ try:
 except ImportError:
     RESOURCES_AVAILABLE = False
 
+try:
+    from moso_core.tools import ToolRegistry, TOOLS_AVAILABLE as _tool_flag
+    TOOLS_AVAILABLE = _tool_flag
+except ImportError:
+    TOOLS_AVAILABLE = False
+
 __all__ = [
     "InferenceConfig",
     "ModelBackend",
@@ -95,4 +101,6 @@ __all__ = [
     "MemoryManager",
     "RESOURCES_AVAILABLE",
     "ResourceManager",
+    "TOOLS_AVAILABLE",
+    "ToolRegistry",
 ]

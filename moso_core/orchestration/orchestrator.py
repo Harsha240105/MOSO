@@ -13,6 +13,7 @@ from moso_core.safety.guardrails import OutputGuard, PromptGuard
 if TYPE_CHECKING:
     from moso_core.memory.manager import MemoryManager
     from moso_core.resources.manager import ResourceManager
+    from moso_core.tools.registry import ToolRegistry
     from moso_core.voice.pipeline import VoicePipeline
     from moso_core.identity.verifier import IdentityVerifier
 
@@ -66,6 +67,7 @@ class Orchestrator:
         self._identity_verifier = None
         self._memory: Optional[MemoryManager] = None
         self._resources: Optional[ResourceManager] = None
+        self._tool_registry: Optional[ToolRegistry] = None
 
     def process(self, prompt: str, modality: Modality = Modality.TEXT, **kwargs) -> PipelineResult:
         if self._prompt_guard:
@@ -223,6 +225,27 @@ class Orchestrator:
             logger.info("Memory engine enabled at %s", db_path or "default location")
         except Exception as e:
             logger.warning("Memory engine not available: %s", e)
+
+    def enable_tools(self) -> None:
+        try:
+            from moso_core.tools.file_tool import FileTool
+            from moso_core.tools.app_tool import AppTool
+            from moso_core.tools.browser_tool import BrowserTool
+            from moso_core.tools.terminal_tool import TerminalTool
+            from moso_core.tools.registry import ToolRegistry
+
+            self._tool_registry = ToolRegistry()
+            self._tool_registry.register_tool(FileTool())
+            self._tool_registry.register_tool(AppTool())
+            self._tool_registry.register_tool(BrowserTool())
+            self._tool_registry.register_tool(TerminalTool())
+            logger.info("Tool engine enabled with %d tools", len(self._tool_registry.list_tools()))
+        except Exception as e:
+            logger.warning("Tool engine not available: %s", e)
+
+    @property
+    def tools(self) -> Optional[ToolRegistry]:
+        return self._tool_registry
 
     def get_identity_confidence(self) -> float:
         if self._identity_verifier is None:
