@@ -47,8 +47,24 @@ class VoiceInteraction:
         self._input_callback: Optional[Callable] = None
         self._audio_queue: queue.Queue = queue.Queue()
         self._stream: Optional[sd.InputStream] = None
+        self._tool_registry = None
 
         self._init_tts()
+        self._init_tools()
+
+    def _init_tools(self):
+        try:
+            from moso_core.tools import ToolRegistry, AppTool, BrowserTool, FileTool, TerminalTool
+            self._tool_registry = ToolRegistry()
+            self._tool_registry.register_tool(AppTool())
+            self._tool_registry.register_tool(BrowserTool())
+            self._tool_registry.register_tool(FileTool())
+            self._tool_registry.register_tool(TerminalTool())
+            logger.info("Tool registry initialized with 4 tools")
+        except ImportError as e:
+            logger.warning("Tool engine not available: %s", e)
+        except Exception as e:
+            logger.warning("Tool init failed: %s", e)
 
     def _init_tts(self):
         if TTS_AVAILABLE:
@@ -221,6 +237,16 @@ class VoiceInteraction:
         return None
 
     def _generate_response(self, text: str) -> str:
+        cmd_text = self._try_llm(text)
+        if cmd_text:
+            return cmd_text
+        cmd_text = self._try_command(text)
+        if cmd_text:
+            return cmd_text
+        from moso_ui.responses import chat_response
+        return chat_response(text)
+
+    def _try_llm(self, text: str) -> Optional[str]:
         try:
             import os, json
             from moso_core.orchestration.orchestrator import MOSOOrchestrator
@@ -238,8 +264,66 @@ class VoiceInteraction:
             pass
         except Exception:
             pass
-        from moso_ui.responses import generate_response as fallback
-        return fallback(text)
+        return None
+
+    def _try_command(self, text: str) -> Optional[str]:
+        if self._tool_registry is None:
+            return None
+        from moso_ui.responses import detect_command
+        cmd = detect_command(text)
+        if cmd is None:
+            return None
+        tool_name, params = cmd
+        from moso_core.tools.models import ToolRequest
+        req = ToolRequest(tool_name=tool_name, parameters=params, requester="aura_ui")
+        result = self._tool_registry.execute_tool(req, identity=self._get_identity())
+        if result.success:
+            return self._format_result(req, result)
+        return result.error or "Something went wrong."
+
+    @staticmethod
+    def _get_identity():
+        class _OwnerIdentity:
+            @staticmethod
+            def get_identity_level():
+                return "owner"
+            @staticmethod
+            def is_owner():
+                return True
+        return _OwnerIdentity()
+
+    @staticmethod
+    def _format_result(req, result) -> str:
+        action = req.parameters.get("action", "")
+        if action == "launch_application":
+            return "Done! I launched %s." % req.parameters.get("app_name", "it")
+        if action == "close_application":
+            return "Closed %s." % req.parameters.get("app_name", "it")
+        if action == "list_running_applications":
+            apps = result.result
+            if isinstance(apps, list) and apps:
+                names = [a["name"] for a in apps[:10]]
+                return "Running apps: %s" % ", ".join(names)
+            return "No apps found."
+        if action in ("search_web", "open_url"):
+            return "Opened in your browser."
+        if action == "list_directory":
+            items = result.result
+            if isinstance(items, list):
+                names = [i.get("name", str(i)) for i in items[:15]]
+                return "Files: %s" % ", ".join(names)
+            return str(result.result)
+        if action == "read_file":
+            content = result.result
+            if isinstance(content, str):
+                return content[:300]
+            return str(result.result)[:300]
+        if action == "run_command":
+            output = result.result
+            if isinstance(output, str):
+                return output[:300]
+            return str(result.result)[:300]
+        return str(result.result)[:300] if result.result else "Done."
 
     def _text_to_speech(self, text: str):
         if not TTS_AVAILABLE or not self._tts_engine:

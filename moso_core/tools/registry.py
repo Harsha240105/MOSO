@@ -119,7 +119,7 @@ class ToolRegistry:
 
         start = time.perf_counter()
         try:
-            result = tool.execute(**params)
+            result = tool.execute(**params, action=action)
         except Exception as e:
             elapsed = time.perf_counter() - start
             result = ToolResult(

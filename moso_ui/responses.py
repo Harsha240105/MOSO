@@ -1,4 +1,4 @@
-"""Simple rule-based response engine for when no LLM model is loaded."""
+"""Rule-based response engine with command detection for tools."""
 import re
 import random
 from typing import Optional
@@ -42,21 +42,27 @@ _RESPONSES = {
         "Anytime!",
     ],
     r"\byes\b|\byeah\b|\byep\b|\bsure\b": [
-        "Great! What would you like to do?",
-        "Awesome! Tell me more.",
+        "Great! What would you like me to do?",
+        "Awesome! Tell me what you need.",
         "Okay! I'm listening.",
     ],
     r"\bno\b|\bnah\b|\bnope\b": [
         "Alright. Let me know if you need anything.",
         "Okay. I'm here if you change your mind.",
     ],
-    r"\bweather\b": [
-        "I don't have internet access for weather data. Check your favorite weather app!",
-    ],
-    r"\btime\b": [
-        "I don't have a clock right now, but check your system tray!",
-    ],
 }
+
+
+_CMD_PATTERNS = [
+    (r"\b(?:open|launch|start|run)\s+(.+)", "app_tool", "launch_application", lambda m: {"app_name": m.group(1).strip()}),
+    (r"\b(?:close|kill|stop|quit)\s+(.+?)(?:\s+app|\s*)$", "app_tool", "close_application", lambda m: {"app_name": m.group(1).strip()}),
+    (r"\blist\s+(?:running\s+)?apps\b|\bwhat.*running\b", "app_tool", "list_running_applications", lambda m: {}),
+    (r"\b(?:search|find|look up|google)\s+(?:for\s+)?(.+)", "browser_tool", "search_web", lambda m: {"query": m.group(1).strip()}),
+    (r"\b(?:go to|open|navigate to)\s+(?:url\s+)?(https?://\S+)", "browser_tool", "open_url", lambda m: {"url": m.group(1).strip()}),
+    (r"\blist\s+(?:files?|dir|directory|folder)\s*(?:in\s+(.+))?", "file_tool", "list_directory", lambda m: {"path": m.group(1).strip() if m.group(1) else "."}),
+    (r"\bread\s+(?:file\s+)?(.+)", "file_tool", "read_file", lambda m: {"path": m.group(1).strip()}),
+    (r"\brun\s+(?:command\s+)?(.+)", "terminal_tool", "run_command", lambda m: {"command": m.group(1).strip()}),
+]
 
 
 _DEFAULT_RESPONSES = [
@@ -68,12 +74,21 @@ _DEFAULT_RESPONSES = [
 ]
 
 
-def generate_response(text: str) -> str:
+def detect_command(text: str) -> Optional[tuple]:
     text_lower = text.lower().strip()
+    for pattern, tool_name, action, param_fn in _CMD_PATTERNS:
+        m = re.search(pattern, text_lower)
+        if m:
+            params = param_fn(m)
+            params["action"] = action
+            return (tool_name, params)
+    return None
 
+
+def chat_response(text: str) -> str:
+    text_lower = text.lower().strip()
     for pattern, replies in _RESPONSES.items():
         if re.search(pattern, text_lower):
             reply = random.choice(replies)
             return reply.format(name=_NAME, author=_AUTHOR)
-
     return random.choice(_DEFAULT_RESPONSES)
