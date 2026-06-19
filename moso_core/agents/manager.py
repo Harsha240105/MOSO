@@ -60,6 +60,10 @@ class AgentManager:
         )
         return summary
 
+    def preview_plan(self, description: str) -> str:
+        plan = self.create_plan(description)
+        return plan.dry_run_summary()
+
     def plan_and_execute(self, description: str, requester: str = "owner") -> ExecutionSummary:
         plan = self.create_plan(description, owner_id=requester)
         return self.execute_plan(plan, requester=requester)

@@ -15,6 +15,7 @@ from moso_core.safety.guardrails import OutputGuard, PromptGuard
 
 if TYPE_CHECKING:
     from moso_core.agents.manager import AgentManager
+    from moso_core.computer_use.automation import AutomationEngine
     from moso_core.memory.manager import MemoryManager
     from moso_core.resources.manager import ResourceManager
     from moso_core.tools.registry import ToolRegistry
@@ -77,6 +78,7 @@ class Orchestrator:
         self._resources: Optional[ResourceManager] = None
         self._tool_registry: Optional[ToolRegistry] = None
         self._agent_manager: Optional[AgentManager] = None
+        self._computer_use: Optional[AutomationEngine] = None
 
     def process(self, prompt: str, modality: Modality = Modality.TEXT, **kwargs) -> PipelineResult:
         if self._prompt_guard:
@@ -272,6 +274,22 @@ class Orchestrator:
     @property
     def agents(self) -> Optional[AgentManager]:
         return self._agent_manager
+
+    def enable_computer_use(self) -> None:
+        try:
+            from moso_core.computer_use.automation import AutomationEngine
+            self._computer_use = AutomationEngine(
+                identity=self._identity_verifier,
+                memory=self._memory,
+                resources=self._resources,
+            )
+            logger.info("Computer use engine enabled")
+        except Exception as e:
+            logger.warning("Computer use engine not available: %s", e)
+
+    @property
+    def computer_use(self) -> Optional[AutomationEngine]:
+        return self._computer_use
 
     def get_identity_confidence(self) -> float:
         if self._identity_verifier is None:

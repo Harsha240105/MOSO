@@ -54,6 +54,9 @@ class PlanHistory:
                 task_order INTEGER NOT NULL DEFAULT 0,
                 verification_method TEXT,
                 verification_target TEXT,
+                max_retries INTEGER NOT NULL DEFAULT 1,
+                retry_count INTEGER NOT NULL DEFAULT 0,
+                depends_on TEXT,
                 FOREIGN KEY (goal_id) REFERENCES goals(id) ON DELETE CASCADE
             );
         """)
@@ -83,10 +86,11 @@ class PlanHistory:
 
     def store_task(self, task: Task) -> int:
         params_json = json.dumps(task.parameters) if isinstance(task.parameters, dict) else task.parameters
+        depends_on_json = json.dumps(task.depends_on) if task.depends_on is not None else None
         with self._lock:
             cur = self._conn.execute(
-                "INSERT INTO tasks (goal_id, title, description, tool_name, parameters, status, result, error, task_order, verification_method, verification_target) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (task.goal_id, task.title, task.description, task.tool_name, params_json, task.status.value, task.result, task.error, task.order, task.verification_method, task.verification_target),
+                "INSERT INTO tasks (goal_id, title, description, tool_name, parameters, status, result, error, task_order, verification_method, verification_target, max_retries, retry_count, depends_on) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (task.goal_id, task.title, task.description, task.tool_name, params_json, task.status.value, task.result, task.error, task.order, task.verification_method, task.verification_target, task.max_retries, task.retry_count, depends_on_json),
             )
             self._conn.commit()
             task.task_id = cur.lastrowid
@@ -153,6 +157,13 @@ class PlanHistory:
                 params = json.loads(params)
             except json.JSONDecodeError:
                 params = {}
+        depends_on_raw = row["depends_on"]
+        depends_on = None
+        if depends_on_raw:
+            try:
+                depends_on = json.loads(depends_on_raw)
+            except (json.JSONDecodeError, TypeError):
+                depends_on = None
         return Task(
             task_id=row["id"],
             goal_id=row["goal_id"],
@@ -166,6 +177,9 @@ class PlanHistory:
             order=row["task_order"],
             verification_method=row["verification_method"],
             verification_target=row["verification_target"],
+            max_retries=row["max_retries"],
+            retry_count=row["retry_count"],
+            depends_on=depends_on,
         )
 
     def close(self):

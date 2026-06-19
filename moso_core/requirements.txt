@@ -22,3 +22,8 @@ aiohttp>=3.9.0
 
 # Resource Manager
 psutil>=5.9.0
+
+# Computer Use
+pyautogui>=0.9.54
+mss>=9.0.0
+pygetwindow>=0.0.9

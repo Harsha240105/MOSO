@@ -53,6 +53,9 @@ class Task:
     order: int = 0
     verification_method: str | None = None
     verification_target: str | None = None
+    max_retries: int = 1
+    retry_count: int = 0
+    depends_on: list[int] | None = None
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -78,6 +81,22 @@ class Plan:
             "estimated_steps": self.estimated_steps,
             "created_at": self.created_at,
         }
+
+    def dry_run_summary(self) -> str:
+        lines = [f"Goal: {self.goal.description}", "Plan:"]
+        for i, task in enumerate(self.tasks, 1):
+            action = task.parameters.get("action", "execute")
+            target = task.parameters.get("path") or task.parameters.get("app_name") or task.parameters.get("command") or task.parameters.get("query") or task.parameters.get("url") or ""
+            lines.append(f"")
+            lines.append(f"  {i}. {task.title}")
+            lines.append(f"     Tool: {task.tool_name}_tool")
+            lines.append(f"     Action: {action}{' -> ' + target if target else ''}")
+            if task.depends_on:
+                lines.append(f"     Depends on: task(s) {[d + 1 for d in task.depends_on]}")
+        lines.append("")
+        lines.append("No actions executed.")
+        lines.append("Proceed?")
+        return "\n".join(lines)
 
 
 @dataclass

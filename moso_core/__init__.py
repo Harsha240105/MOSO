@@ -91,6 +91,12 @@ try:
 except ImportError:
     AGENTS_AVAILABLE = False
 
+try:
+    from moso_core.computer_use import COMPUTER_USE_AVAILABLE as _cu_flag
+    COMPUTER_USE_AVAILABLE = _cu_flag
+except ImportError:
+    COMPUTER_USE_AVAILABLE = False
+
 __all__ = [
     "InferenceConfig",
     "ModelBackend",
@@ -114,4 +120,5 @@ __all__ = [
     "TOOLS_AVAILABLE",
     "ToolRegistry",
     "AGENTS_AVAILABLE",
+    "COMPUTER_USE_AVAILABLE",
 ]
