@@ -3,13 +3,14 @@ from __future__ import annotations
 import sys
 
 from PySide6.QtCore import QCoreApplication, Qt, QTimer
-from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QApplication, QMenu
+from PySide6.QtGui import QAction, QIcon, QKeySequence, QShortcut
+from PySide6.QtWidgets import QApplication, QInputDialog, QMenu
 
 from moso_ui.aura_orb import AuraOrb, OrbState
 from moso_ui.conversation import ConversationBubble
 from moso_ui.settings import AuraSettings
 from moso_ui.tray import SystemTray
+from moso_ui.voice_interaction import VoiceInteraction
 
 
 class AuraApp:
@@ -22,6 +23,7 @@ class AuraApp:
         self._orb = AuraOrb()
         self._bubble = ConversationBubble()
         self._tray = SystemTray()
+        self._voice = VoiceInteraction()
 
         self._setup_connections()
         self._load_position()
@@ -30,7 +32,17 @@ class AuraApp:
         self._tray.show_action.triggered.connect(self._show_orb)
         self._tray.quit_action.triggered.connect(self._quit)
         self._tray.settings_action.triggered.connect(self._show_about)
-        self._orb.clicked.connect(self._toggle_bubble)
+        self._orb.single_clicked.connect(self._toggle_voice)
+        self._orb.double_clicked.connect(self._toggle_bubble)
+        self._voice.set_state_callback(self._on_voice_state)
+        self._voice.set_text_callback(self._on_voice_text)
+        self._voice.set_input_callback(self._request_text_input)
+        self._setup_global_hotkeys()
+
+    def _setup_global_hotkeys(self):
+        self._ptt_shortcut = QShortcut(QKeySequence("Space"), self._orb)
+        self._ptt_shortcut.activated.connect(self._toggle_voice)
+        self._orb.installEventFilter(self._orb)
 
     def _load_position(self):
         if self._settings.orb_x > 0 and self._settings.orb_y > 0:
@@ -60,10 +72,41 @@ class AuraApp:
             self._bubble.show()
             self._bubble.raise_()
 
+    def _toggle_voice(self):
+        if self._orb.state == OrbState.LISTENING:
+            self._voice.stop_listening()
+        elif self._voice.mic_working is False:
+            self._show_text_input_direct()
+        else:
+            self._bubble.show()
+            self._bubble.raise_()
+            self._voice.start_listening()
+
+    def _show_text_input_direct(self):
+        self._bubble.show()
+        self._bubble.raise_()
+        self._bubble.set_text("MOSO: Type your message below.")
+        text, ok = QInputDialog.getText(self._orb, "MOSO", "Type your message:")
+        if ok and text.strip():
+            self._voice.process_text(text.strip())
+
+    def _request_text_input(self) -> str:
+        text, ok = QInputDialog.getText(self._orb, "MOSO", "Type your message:")
+        return text if ok else ""
+
+    def _on_voice_state(self, state: OrbState):
+        self._orb.state = state
+
+    def _on_voice_text(self, text: str):
+        self._bubble.set_text(text)
+        self._bubble.show()
+        self._bubble.raise_()
+
     def _show_about(self):
         self._bubble.set_text("MOSO AI - Aura UI\n\n"
                               "Privacy-first local AI assistant.\n\n"
-                              "Version: 0.2.0")
+                              "Click the orb or press Space to talk.\n\n"
+                              "Version: 0.3.0")
         self._toggle_bubble()
 
     def _quit(self):

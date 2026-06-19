@@ -16,7 +16,8 @@ ANIMATION_INTERVAL = 50
 
 class AuraOrb(QWidget):
     state_changed = Signal(str)
-    clicked = Signal()
+    single_clicked = Signal()
+    double_clicked = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -25,6 +26,7 @@ class AuraOrb(QWidget):
         self._pulse = 0
         self._dragging = False
         self._drag_pos = QPoint()
+        self._drag_start = QPoint()
 
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint
@@ -144,17 +146,22 @@ class AuraOrb(QWidget):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
+            self._drag_start = event.globalPosition().toPoint()
             self._dragging = True
             self._drag_pos = event.globalPosition().toPoint() - self.frameGeometry().topLeft()
-        elif event.button() == Qt.MouseButton.RightButton:
-            self.clicked.emit()
 
     def mouseMoveEvent(self, event):
         if self._dragging:
             self.move(event.globalPosition().toPoint() - self._drag_pos)
 
     def mouseReleaseEvent(self, event):
-        self._dragging = False
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._dragging = False
+            dist = (event.globalPosition().toPoint() - self._drag_start).manhattanLength()
+            if dist < 10:
+                self.single_clicked.emit()
 
     def mouseDoubleClickEvent(self, event):
-        self.clicked.emit()
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._dragging = False
+            self.double_clicked.emit()
