@@ -18,6 +18,7 @@ class AgentManager:
         identity=None,
         memory=None,
         resources=None,
+        automation_engine=None,
         db_path: Optional[str] = None,
     ):
         self._planner = Planner()
@@ -26,6 +27,7 @@ class AgentManager:
             identity=identity,
             memory=memory,
             resources=resources,
+            automation_engine=automation_engine,
         )
         self._history = PlanHistory(db_path=db_path)
 
@@ -80,4 +82,5 @@ class AgentManager:
             {"name": "search_web", "description": "Search the web or browse a URL"},
             {"name": "read_file", "description": "Read a file"},
             {"name": "create_file", "description": "Create a file with optional content"},
+            {"name": "desktop_automation", "description": "Perform desktop actions: click, type, screenshot, move mouse, press keys, focus windows"},
         ]

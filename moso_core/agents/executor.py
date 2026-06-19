@@ -2,20 +2,22 @@ from __future__ import annotations
 
 import logging
 import time
+from typing import Any, Optional
 
 from moso_core.agents.models import ExecutionSummary, Goal, GoalStatus, Plan, Task, TaskStatus
 from moso_core.agents.verifier import Verifier
-from moso_core.tools.models import ToolRequest
+from moso_core.tools.models import ToolRequest, ToolResult
 
 logger = logging.getLogger(__name__)
 
 
 class Executor:
-    def __init__(self, tool_registry=None, identity=None, memory=None, resources=None):
+    def __init__(self, tool_registry=None, identity=None, memory=None, resources=None, automation_engine=None):
         self._tool_registry = tool_registry
         self._identity = identity
         self._memory = memory
         self._resources = resources
+        self._automation_engine = automation_engine
         self._verifier = Verifier()
 
     @property
@@ -32,6 +34,7 @@ class Executor:
 
         for task in plan.tasks:
             if task.depends_on:
+                skip_task = False
                 for dep_order in task.depends_on:
                     if dep_order in failed_orders:
                         task.status = TaskStatus.SKIPPED
@@ -46,7 +49,8 @@ class Executor:
                             "error": task.error,
                         })
                         logger.warning("Task '%s' skipped: dependency task %d failed", task.title, dep_order + 1)
-                        continue
+                        skip_task = True
+                        break
                     if dep_order not in completed_orders:
                         task.status = TaskStatus.SKIPPED
                         task.error = f"Dependency task {dep_order + 1} not completed"
@@ -60,7 +64,10 @@ class Executor:
                             "error": task.error,
                         })
                         logger.warning("Task '%s' skipped: dependency task %d not completed", task.title, dep_order + 1)
-                        continue
+                        skip_task = True
+                        break
+                if skip_task:
+                    continue
 
             task.status = TaskStatus.RUNNING
             success = self._execute_with_retry(task, requester, task_results)
@@ -180,6 +187,8 @@ class Executor:
         }
 
     def _execute_task(self, task: Task, requester: str):
+        if task.tool_name == "computer_use":
+            return self._execute_computer_use_task(task, requester)
         if self._tool_registry is None:
             logger.error("Cannot execute task: no tool_registry available")
             return None
@@ -193,4 +202,33 @@ class Executor:
             identity=self._identity,
             memory=self._memory,
             resources=self._resources,
+        )
+
+    def _execute_computer_use_task(self, task: Task, requester: str) -> ToolResult | None:
+        if self._automation_engine is None:
+            logger.error("Cannot execute computer_use task: no automation_engine available")
+            return None
+        params = task.parameters
+        action = params.get("action", "")
+        is_sequence = "actions" in params
+        if is_sequence:
+            sequence = params.get("actions", [])
+            dry_run = params.get("dry_run", False)
+            cu_results = self._automation_engine.execute_sequence(sequence, dry_run=dry_run)
+            all_ok = all(r.success for r in cu_results)
+            return ToolResult(
+                success=all_ok,
+                tool_name="computer_use",
+                action=action or "execute_sequence",
+                result=[r.to_dict() for r in cu_results] if all_ok else None,
+                error=None if all_ok else next((r.error for r in cu_results if not r.success), "sequence failed"),
+            )
+        dry_run = params.get("dry_run", False)
+        cu_result = self._automation_engine.execute_action(params, dry_run=dry_run)
+        return ToolResult(
+            success=cu_result.success,
+            tool_name="computer_use",
+            action=cu_result.action,
+            result=cu_result.result,
+            error=cu_result.error,
         )

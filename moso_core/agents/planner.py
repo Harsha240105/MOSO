@@ -131,6 +131,116 @@ class CreateFileTemplate(PlanTemplate):
         ]
 
 
+class DesktopAutomationTemplate(PlanTemplate):
+    def __init__(self):
+        super().__init__(
+            name="desktop_automation",
+            keywords=["click", "mouse", "type", "screenshot", "capture", "screen", "press", "key", "scroll", "focus", "window", "desktop", "switch to", "move"],
+            description="Perform desktop automation actions via Computer Use",
+        )
+
+    def generate(self, goal: Goal) -> list[Task]:
+        desc = goal.description.lower()
+
+        if "screenshot" in desc or ("capture" in desc and "screen" in desc):
+            return [
+                Task(
+                    goal_id=0, title="Take screenshot", description="Capture the screen",
+                    tool_name="computer_use",
+                    parameters={"action": "capture_screen"},
+                    order=0, verification_method="content_not_empty",
+                )
+            ]
+
+        if "type" in desc:
+            text_match = re.search(r"type\s+(.+?)(?:\.|$)", desc, re.IGNORECASE)
+            text = text_match.group(1).strip() if text_match else "hello"
+            return [
+                Task(
+                    goal_id=0, title="Type text", description=f"Type: {text}",
+                    tool_name="computer_use",
+                    parameters={"action": "type_text", "text": text},
+                    order=0,
+                )
+            ]
+
+        if "press" in desc or ("hit" in desc and "key" in desc):
+            key_match = re.search(r"(?:press|hit)\s+(?:the\s+)?(?:key\s+)?(.+?)(?:\.|$)", desc, re.IGNORECASE)
+            key = key_match.group(1).strip() if key_match else "enter"
+            return [
+                Task(
+                    goal_id=0, title="Press key", description=f"Press {key}",
+                    tool_name="computer_use",
+                    parameters={"action": "press", "key": key},
+                    order=0,
+                )
+            ]
+
+        if "scroll" in desc:
+            direction = "down" if "down" in desc else ("up" if "up" in desc else "down")
+            amount = 3 if direction == "down" else -3
+            return [
+                Task(
+                    goal_id=0, title="Scroll", description=f"Scroll {direction}",
+                    tool_name="computer_use",
+                    parameters={"action": "scroll", "amount": amount},
+                    order=0,
+                )
+            ]
+
+        if "move" in desc and "mouse" in desc:
+            coord_match = re.search(r"(?:to\s+)?\(?(\d+)\s*,?\s*(\d+)\)?", desc)
+            x = int(coord_match.group(1)) if coord_match else 500
+            y = int(coord_match.group(2)) if coord_match else 500
+            return [
+                Task(
+                    goal_id=0, title="Move mouse", description=f"Move to ({x}, {y})",
+                    tool_name="computer_use",
+                    parameters={"action": "move_to", "x": x, "y": y},
+                    order=0,
+                )
+            ]
+
+        if "click" in desc:
+            coord_match = re.search(r"(?:at\s+)?\(?(\d+)\s*,?\s*(\d+)\)?", desc)
+            x = int(coord_match.group(1)) if coord_match else None
+            y = int(coord_match.group(2)) if coord_match else None
+            params = {"action": "click"}
+            if x is not None and y is not None:
+                params["x"] = x
+                params["y"] = y
+            return [
+                Task(
+                    goal_id=0, title="Click", description=f"Click at ({x}, {y})" if x else "Click",
+                    tool_name="computer_use",
+                    parameters=params,
+                    order=0,
+                )
+            ]
+
+        if "focus" in desc or ("switch" in desc and "window" in desc):
+            title_pattern = r"(?:focus|switch to)\s+(.+?)(?:\.|$)"
+            title_match = re.search(title_pattern, desc, re.IGNORECASE)
+            title = title_match.group(1).strip() if title_match else "untitled"
+            return [
+                Task(
+                    goal_id=0, title="Focus window", description=f"Focus: {title}",
+                    tool_name="computer_use",
+                    parameters={"action": "focus_window", "window_title": title},
+                    order=0,
+                )
+            ]
+
+        return [
+            Task(
+                goal_id=0, title="Execute desktop action", description=desc,
+                tool_name="computer_use",
+                parameters={"action": desc.split()[0] if desc.split() else "move_to"},
+                order=0,
+            )
+        ]
+
+
 class Planner:
     def __init__(self):
         self._templates: list[PlanTemplate] = [
@@ -140,6 +250,7 @@ class Planner:
             SearchWebTemplate(),
             ReadFileTemplate(),
             CreateFileTemplate(),
+            DesktopAutomationTemplate(),
         ]
 
     def create_plan(self, description: str, owner_id: str = "default") -> Plan:

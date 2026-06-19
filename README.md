@@ -98,8 +98,10 @@
 | **Orchestrator Integration** | ✅ Complete | Memory context injection, auto-event logging, resource awareness |
 | **Embeddings / Vector Search** | 🔄 V2 | Planned for next release |
 | **GPU Monitoring** | 🔄 V2 | pynvml integration planned |
-| **Agent System** | ✅ V1 | Template-based goal decomposition, task execution, verification |
+| **Agent System** | ✅ V1.1 | Template-based planning + retry + dependencies + dry-run preview |
 | **Tool Engine** | ✅ V1 | File ops, apps, browser, terminal — structured tool execution |
+| **Computer Use** | ✅ V1 | Mouse, keyboard, screen capture, window management, automation, recorder |
+| **Screen Vision** | ✅ V1 | Screenshot OCR, active window detection, screen context generation |
 
 ---
 
@@ -112,7 +114,9 @@
 3. **Memory Engine** — MOSO remembers across sessions: past conversations (episodic), facts about you (semantic), how to do things (procedural), and your preferences. All stored locally in SQLite
 4. **Resource Manager** — MOSO understands its environment: CPU usage, RAM available, storage space, battery level, network speeds, and running processes. This lets it answer "can I run X?" before attempting a task
 5. **Tool Engine** — MOSO can act: open applications, create and read files, search the web, and run terminal commands. Every action is permission-gated, audit-logged, and remembered. Dry-run mode lets you preview before executing
-6. **Agent Planner** — MOSO can plan: decompose goals into sequential tasks using template matching (python project, folder, app, web search, file read/write), execute via Tool Engine, verify each task, and persist history to SQLite
+6. **Agent Planner** — MOSO can plan: decompose goals into sequential tasks using template matching (python project, folder, app, web search, file read/write), execute via Tool Engine, verify each task, retry on failure, check dependencies, and persist history to SQLite
+7. **Computer Use** — MOSO can operate desktop software like a human: move mouse, click buttons, type text, press keyboard shortcuts, capture screenshots, focus windows, execute action sequences, and record workflows
+8. **Screen Vision** — MOSO can see your screen: OCR text extraction, text region detection, active window identification, and screen context assembly — all observation-only, no clicking or ML
 
 Everything runs locally — no cloud dependency, no data leaves your device.
 
@@ -155,6 +159,16 @@ Everything runs locally — no cloud dependency, no data leaves your device.
 │  │                  Resource Manager                         │   │
 │  │  CPU  │  RAM  │  Storage  │  Battery  │  Network  │ Procs│   │
 │  └──────────────────────────┬───────────────────────────────┘   │
+│                         ▼                                        │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                   Screen Vision                           │   │
+│  │   OCR  │  Text Regions  │  Active Window  │  Context      │   │
+│  └──────────────────────────┬───────────────────────────────┘   │
+│                             ▼                                    │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │                   Computer Use                            │   │
+│  │   Mouse  │  Keyboard  │  Screen  │  Windows  │ Recorder   │   │
+│  └──────────────────────────┬───────────────────────────────┘   │
 │                             ▼                                    │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │                   Tool Engine                             │   │
@@ -187,7 +201,9 @@ The foundational runtime that powers all AI inference across platforms with mult
 | **Memory** | Episodic, Semantic, Procedural, Preferences | SQLite-persistent cross-session memory |
 | **Resources** | CPU, RAM, Storage, Battery, Network, Processes | psutil-based local resource monitoring |
 | **Tools** | File, Apps, Browser, Terminal | Permission-gated OS actions with audit logging + dry-run |
-| **Agents** | Planner, Executor, Verifier, History | Template-based goal decomposition with task verification |
+| **Agents** | Planner, Executor, Verifier, History | Template-based goal decomposition with retry + dependencies + dry-run |
+| **Computer Use** | Mouse, Keyboard, Screen, Windows, Automation, Recorder | Desktop automation — pyautogui, mss, pygetwindow |
+| **Screen Vision** | OCR, Text Regions, Window Detection, Context | Screenshot OCR — pytesseract, mss, pygetwindow |
 
 ### M0S0 Assistant — Adaptive Personality
 
@@ -475,7 +491,133 @@ result = orchestrator.tools.execute_tool(req3, identity=orchestrator.identity_ve
 
 ---
 
-### Agent Planner
+### Computer Use
+
+**MOSO Computer Use** provides local desktop automation — MOSO can operate software like a human:
+
+```
+Agent Planner / Orchestrator
+    ↓
+┌─────────────────────────────────────────────────────┐
+│                   AutomationEngine                   │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │              Permissions                      │   │
+│  │   guest: screenshot / list_windows            │   │
+│  │   trusted: + focus / screen analysis          │   │
+│  │   owner: + mouse / keyboard / automation      │   │
+│  └──────────────────┬───────────────────────────┘   │
+│                     ▼                                │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────┐ │
+│  │   Mouse  │ │ Keyboard │ │  Screen  │ │ Windows│ │
+│  │ pyautogui│ │ pyautogui│ │ mss+PIL  │ │pygetwin│ │
+│  │          │ │          │ │          │ │        │ │
+│  │ moveTo() │ │ typewrite│ │ .grab()  │ │.activate││
+│  │ click()  │ │ press()  │ │ region() │ │.close() │ │
+│  │ drag()   │ │ hotkey() │ │ .save()  │ │listTitl│ │
+│  │ scroll() │ │ ctrl_c   │ │          │ │        │ │
+│  └──────────┘ └──────────┘ └──────────┘ └────────┘ │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐   │
+│  │            WorkflowRecorder                   │   │
+│  │  record_mouse(duration)                      │   │
+│  │  record_keyboard(duration)                   │   │
+│  │  export_sequence() → AutomationSequence      │   │
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+```
+
+**Permission Model:**
+
+| Level | Actions |
+|-------|---------|
+| **Guest** | `screenshot`, `list_windows` |
+| **Trusted** | Above + `focus_window`, `get_active_window`, `screen analysis` |
+| **Owner** | Above + `move_mouse`, `click`, `double_click`, `right_click`, `drag`, `scroll`, `type_text`, `press_key`, `hotkey`, `record_mouse`, `record_keyboard`, `execute_sequence` |
+
+**Controllers:**
+
+| Controller | Library | Functions |
+|-----------|---------|-----------|
+| **MouseController** | pyautogui | `move_to(x, y)`, `click(x, y)`, `double_click(x, y)`, `right_click(x, y)`, `drag(sx, sy, ex, ey)`, `scroll(amount)` |
+| **KeyboardController** | pyautogui | `type_text(text)`, `press(key)`, `hotkey(*keys)`, `ctrl_c()`, `ctrl_v()`, `alt_tab()`, `win_r()`, `enter()`, `escape()` |
+| **ScreenCapturer** | mss + Pillow | `capture_screen()`, `capture_region(l, t, w, h)`, `save_screenshot(path)` |
+| **WindowManager** | pygetwindow | `list_windows()`, `get_active_window()`, `focus_window(title)`, `close_window(title)` |
+
+**Automation Engine:**
+
+Execute single actions or full sequences with identity + resource checks:
+
+```python
+orchestrator.enable_computer_use()
+
+# Single action
+result = orchestrator.computer_use.execute_action(
+    {"action": "move_to", "x": 500, "y": 300}
+)
+# → ComputerUseResult(success=True, action="move_to", result={"x": 500, "y": 300})
+
+# Sequence with dry-run
+seq = [
+    {"action": "move_to", "x": 500, "y": 200},
+    {"action": "click"},
+    {"action": "type_text", "text": "MOSO AI"},
+    {"action": "press", "key": "enter"},
+]
+print(orchestrator.computer_use.dry_run_sequence(seq))
+# → Shows plan without executing
+
+results = orchestrator.computer_use.execute_sequence(seq)
+# → Executes, stops on first failure
+```
+
+**Workflow Recorder:**
+
+```python
+# Record a workflow
+recorder = WorkflowRecorder()
+recorder.start_recording(duration=5.0, record_keyboard=True)
+# ... perform actions ...
+recorder.stop_recording()
+sequence = recorder.export_sequence(description="Open Chrome and search")
+# → Saved to ~/.moso/workflows/workflow_20260619_120000.json
+```
+
+**Dry Run Required:**
+
+Before any automation execution, MOSO always shows the plan:
+
+```
+Computer Use Plan:
+  1. move_to -> 500, 200
+  2. click
+  3. type_text -> MOSO AI
+  4. press -> enter
+
+No actions executed.
+Proceed?
+```
+
+Execution only proceeds after confirmation.
+
+**Orchestrator Integration:**
+```python
+orchestrator = Orchestrator(config)
+orchestrator.enable_identity()
+orchestrator.enable_memory()
+orchestrator.enable_resources()
+orchestrator.enable_tools()
+orchestrator.enable_agents()
+orchestrator.enable_computer_use()
+
+# MOSO can now see your screen and control your desktop
+screenshot = orchestrator.computer_use.execute_action(
+    {"action": "capture_screen"}
+)
+windows = orchestrator.computer_use.execute_action(
+    {"action": "list_windows"}
+)
+```
 
 **MOSO Agent Planner** provides autonomous goal decomposition and execution using template matching (no LLM calls needed):
 
@@ -484,11 +626,12 @@ User Goal: "create a python project named test_app"
     ↓
 ┌──────────────────────────────────────────────┐
 │              Planner                          │
-│  Matches goal against 6 templates:           │
+│  Matches goal against 7 templates:           │
 │  - python_project (score: 3) ← best match    │
 │  - create_folder (score: 1)                  │
 │  - create_file (score: 1)                    │
 │  - open_app / search_web / read_file (0)     │
+│  - desktop_automation (score: 3)             │
 └──────────────────┬───────────────────────────┘
                    ↓
 ┌──────────────────────────────────────────────┐
@@ -517,7 +660,7 @@ User Goal: "create a python project named test_app"
 └──────────────────────────────────────────────┘
 ```
 
-**6 Built-in Templates:**
+**7 Built-in Templates:**
 
 | Template | Keywords | Tasks Generated |
 |----------|----------|----------------|
@@ -527,6 +670,7 @@ User Goal: "create a python project named test_app"
 | **search_web** | search, find, web, browse, google | Search DuckDuckGo or browse URL |
 | **read_file** | read, file, view, show, display, cat | Read file, verify content not empty |
 | **create_file** | create, file, make, write | Create file with optional content, verify existence |
+| **desktop_automation** | click, mouse, type, screenshot, scroll, press, focus, desktop, screen | Generate computer_use tasks for desktop interaction |
 
 **Fallback:** Goals that don't match any template (score < 2) are executed as a single terminal command.
 
@@ -570,7 +714,7 @@ for plan in orchestrator.agents.get_recent_plans(5):
 │                                                      │
 │  ┌──────────────────────────────────────────────┐   │
 │  │               Planner                         │   │
-│  │  6 x PlanTemplate + keyword scoring + regex   │   │
+│  │  7 x PlanTemplate + keyword scoring + regex   │   │
 │  └──────────────────┬───────────────────────────┘   │
 │                     ▼                                │
 │  ┌──────────────────────────────────────────────┐   │
@@ -596,6 +740,150 @@ for plan in orchestrator.agents.get_recent_plans(5):
 - **Persistent history** — every plan and task is stored in `~/.moso/plans.db`
 - **Per-task verification** — each completed task is verified before the next begins
 - **First failure stops execution** — failed tasks halt the remaining sequence
+
+---
+
+### Screen Vision
+
+**MOSO Screen Vision** provides observation-only screen analysis — MOSO can see what's on your screen without clicking or manipulating anything:
+
+```
+Agent Planner / Orchestrator (via VisionManager)
+    ↓
+┌─────────────────────────────────────────────────────┐
+│                   VisionManager                      │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │              Permissions                      │   │
+│  │   guest: ❌ (denied)                         │   │
+│  │   trusted: ✅ screenshot + OCR + window info  │   │
+│  │   owner: ✅ screenshot + OCR + window info    │   │
+│  │   no identity: ✅ (headless fallback)        │   │
+│  └──────────────────┬───────────────────────────┘   │
+│                     ▼                                │
+│  ┌──────────────────────────────────────────────┐   │
+│  │               build_context()                 │   │
+│  │  1. Capture screenshot (via ScreenCapturer)   │   │
+│  │  2. Extract text via OCR (pytesseract)        │   │
+│  │  3. Detect text regions (bounding boxes)      │   │
+│  │  4. List windows (via WindowManager)          │   │
+│  │  5. Identify active window                    │   │
+│  │  6. Assemble ScreenContext                    │   │
+│  └──────────────────┬───────────────────────────┘   │
+│                     ▼                                │
+│  ┌──────────────────────────────────────────────┐   │
+│  │              ScreenContext                    │   │
+│  │  ┌──────────────────┐  ┌──────────────────┐  │   │
+│  │  │  text_content    │  │  ocr_results     │  │   │
+│  │  │  "All visible    │  │  [OCRResult, ...]│  │   │
+│  │  │   text on screen"│  │  text + conf +   │  │   │
+│  │  │                  │  │  bounding_box    │  │   │
+│  │  └──────────────────┘  └──────────────────┘  │   │
+│  │  ┌──────────────────┐  ┌──────────────────┐  │   │
+│  │  │  windows[]       │  │  active_window   │  │   │
+│  │  │  ["Chrome",      │  │  "Chrome"        │  │   │
+│  │  │   "Terminal"]    │  │                  │  │   │
+│  │  └──────────────────┘  └──────────────────┘  │   │
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+```
+
+**Supported Features:**
+
+| Feature | Method | Output |
+|---------|--------|--------|
+| **Text Extraction** | `extract_text()` via pytesseract | `str` — all visible text |
+| **Text Region Detection** | `extract_text_regions()` via pytesseract | `list[OCRResult]` — text + confidence + bounding box |
+| **Screenshot Capture** | `ScreenCapturer.capture_screen()` via mss | Image file + resolution |
+| **Window Listing** | `WindowManager.list_windows()` via pygetwindow | `list[str]` — open window titles |
+| **Active Window** | `WindowManager.get_active_window()` via pygetwindow | `str` — focused window title |
+| **Context Assembly** | `build_context()` | `ScreenContext` — full screen state |
+
+**Permission Model:**
+
+| Level | Access |
+|-------|--------|
+| **Guest** | Access denied — no screen data returned |
+| **Trusted** | Full access — capture, OCR, window info |
+| **Owner** | Full access — capture, OCR, window info |
+| **No Identity** | Full access — fallback for headless/dev |
+
+**Resource Protection:**
+- When CPU > 90% **and** RAM > 90%, VisionManager skips OCR to avoid system overload
+- OCR results are cleared (text becomes `""`, regions become `[]`) under high load
+- Screenshot + window listing still proceed (low cost)
+
+**Usage:**
+
+```python
+orchestrator.enable_vision()
+
+# Full screen analysis
+ctx = orchestrator.vision.build_context()
+print(ctx.summary())
+# Active Window: Chrome
+# Open Windows: Chrome, Terminal
+# Resolution: 1920x1080
+# Visible Text: ... (all extracted text)
+
+# Just the text
+text = orchestrator.vision.get_screen_text()
+print(text)  # "Welcome to MOSO AI\n..."
+
+# Just the active window
+title = orchestrator.vision.get_active_window()
+print(title)  # "Google Chrome"
+
+# One-shot capture + analyze
+result = orchestrator.vision.capture_and_analyze()
+print(result["text_content"])
+```
+
+**Architecture:**
+```
+┌─────────────────────────────────────────────────────┐
+│                  VisionManager                       │
+│                                                      │
+│  ┌──────────────────────────────────────────────┐   │
+│  │            Vision Package                     │   │
+│  │                                              │   │
+│  │  ┌─────────────┐  ┌─────────────────────┐   │   │
+│  │  │ ocr.py      │  │ screenshot_         │   │   │
+│  │  │ extract_    │  │ analysis.py         │   │   │
+│  │  │ text()      │  │ analyze_            │   │   │
+│  │  │ extract_    │  │ screenshot()        │   │   │
+│  │  │ text_       │  │                     │   │   │
+│  │  │ regions()   │  │ image + OCR +       │   │   │
+│  │  └─────────────┘  │ windows + metadata  │   │   │
+│  │                    └─────────────────────┘   │   │
+│  │  ┌─────────────┐  ┌─────────────────────┐   │   │
+│  │  │ context.py  │  │ models.py           │   │   │
+│  │  │ build_      │  │ BoundingBox         │   │   │
+│  │  │ context()   │  │ OCRResult           │   │   │
+│  │  │ → Screen    │  │ WindowInfo          │   │   │
+│  │  │   Context   │  │ ScreenContext       │   │   │
+│  │  └─────────────┘  └─────────────────────┘   │   │
+│  └──────────────────┬──────────────────────────┘   │
+│                     ▼                                │
+│  ┌──────────────────────────────────────────────┐   │
+│  │             Dependencies                      │   │
+│  │  pytesseract  → OCR engine                   │   │
+│  │  mss          → Screen capture               │   │
+│  │  Pillow       → Image processing             │   │
+│  │  pygetwindow  → Window management            │   │
+│  └──────────────────────────────────────────────┘   │
+│                                                      │
+│  Memory Integration: capture_and_analyze() logs      │
+│  events to memory with tags: [vision, screen_capture]│
+└─────────────────────────────────────────────────────┘
+```
+
+**V1 Limitations (deferred to V2):**
+- No UI element detection (buttons, search boxes, menus, links)
+- No layout analysis (positional relationships between elements)
+- No multimodal LLM integration
+- No Computer Use integration (Vision finds button → CU clicks)
+- No self-healing automation
 
 <table>
   <tr>
@@ -717,8 +1005,25 @@ moso-core/                  # AI runtime, voice, identity, memory
 │   ├── browser_tool.py     # BrowserTool — open URLs, search web
 │   └── terminal_tool.py    # TerminalTool — commands with timeout + output cap
 ├── orchestration/          # Dynamic pipeline composition
+├── vision/                 # Screen vision — observation-only OCR
+│   ├── models.py           # BoundingBox, OCRResult, WindowInfo, ScreenContext
+│   ├── ocr.py              # extract_text(), extract_text_regions() (pytesseract)
+│   ├── screenshot_analysis.py # capture + OCR + window metadata
+│   ├── context.py          # build_context() → ScreenContext
+│   ├── manager.py          # VisionManager — permission + resource + memory integration
+│   └── __init__.py         # Exports + VISION_AVAILABLE flag
+├── computer_use/           # Desktop automation layer
+│   ├── mouse.py            # Move, click, drag, scroll (pyautogui)
+│   ├── keyboard.py         # Type, press, hotkey (pyautogui)
+│   ├── screen.py           # Capture screen/region (mss + Pillow)
+│   ├── windows.py          # List, focus, close windows (pygetwindow)
+│   ├── automation.py       # Action execution + sequence engine
+│   ├── recorder.py         # Workflow recorder (mouse + keyboard)
+│   ├── permissions.py      # 3-tier permission model
+│   ├── models.py           # ComputerUse dataclasses
+│   └── __init__.py         # Exports + COMPUTER_USE_AVAILABLE flag
 ├── agents/                 # Autonomous agent system
-│   ├── planner.py          # Template-based goal → task decomposition (6 templates)
+│   ├── planner.py          # Template-based goal → task decomposition (7 templates)
 │   ├── executor.py         # Sequential task execution with verification
 │   ├── verifier.py         # Per-task verification (file/process/exit code checks)
 │   ├── history.py          # SQLite plan storage at ~/.moso/plans.db
@@ -754,7 +1059,9 @@ feature/*   ─── New features (branched from main, PR to merge)
 | **Phase 4** — Resource Manager | CPU, RAM, storage, battery, network, process monitoring | ✅ Complete |
 | **Phase 5** — Tool Engine | File ops, apps, browser, terminal — permission-gated + audit-logged | ✅ Complete |
 | **Phase 6** — Intelligence | Embeddings + vector search, GPU monitoring, RAG | 🔄 Next |
-| **Phase 7** — Agent System | Template-based goal decomposition, task execution, verification | ✅ Complete |
+| **Phase 7** — Agent System | Template-based goal decomposition, task execution, retry, dependencies, dry-run | ✅ Complete |
+| **Phase 8** — Computer Use | Mouse, keyboard, screen capture, window management, automation, recorder | ✅ Complete |
+| **Phase 9** — Vision V1 | Screenshot OCR, text region detection, active window detection, screen context | ✅ Complete |
 
 ---
 
@@ -819,6 +1126,21 @@ summary = orchestrator.agents.plan_and_execute(
     requester="owner",
 )
 print(summary.overall_status)  # GoalStatus.COMPLETED
+
+# MOSO can automate your desktop:
+orchestrator.enable_computer_use()
+print(orchestrator.computer_use.dry_run_sequence([
+    {"action": "move_to", "x": 500, "y": 200},
+    {"action": "click"},
+    {"action": "type_text", "text": "Hello from MOSO"},
+]))
+
+# MOSO can see your screen:
+orchestrator.enable_vision()
+ctx = orchestrator.vision.build_context()
+print(f"Active window: {ctx.active_window}")
+print(f"Screen text: {ctx.text_content[:100]}...")
+print(ctx.summary())
 ```
 
 **Voice Mode:**

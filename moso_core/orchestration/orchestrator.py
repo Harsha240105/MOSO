@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from moso_core.memory.manager import MemoryManager
     from moso_core.resources.manager import ResourceManager
     from moso_core.tools.registry import ToolRegistry
+    from moso_core.vision.manager import VisionManager
     from moso_core.voice.pipeline import VoicePipeline
     from moso_core.identity.verifier import IdentityVerifier
 
@@ -79,6 +80,7 @@ class Orchestrator:
         self._tool_registry: Optional[ToolRegistry] = None
         self._agent_manager: Optional[AgentManager] = None
         self._computer_use: Optional[AutomationEngine] = None
+        self._vision: Optional[VisionManager] = None
 
     def process(self, prompt: str, modality: Modality = Modality.TEXT, **kwargs) -> PipelineResult:
         if self._prompt_guard:
@@ -266,8 +268,9 @@ class Orchestrator:
                 identity=self._identity_verifier,
                 memory=self._memory,
                 resources=self._resources,
+                automation_engine=self._computer_use,
             )
-            logger.info("Agent planner enabled")
+            logger.info("Agent planner enabled (computer_use routing: %s)", self._computer_use is not None)
         except Exception as e:
             logger.warning("Agent planner not available: %s", e)
 
@@ -286,10 +289,29 @@ class Orchestrator:
             logger.info("Computer use engine enabled")
         except Exception as e:
             logger.warning("Computer use engine not available: %s", e)
+        if self._agent_manager is not None:
+            self._agent_manager._executor._automation_engine = self._computer_use
+            logger.info("Reconnected computer_use to existing agent manager")
 
     @property
     def computer_use(self) -> Optional[AutomationEngine]:
         return self._computer_use
+
+    def enable_vision(self) -> None:
+        try:
+            from moso_core.vision.manager import VisionManager
+            self._vision = VisionManager(
+                identity=self._identity_verifier,
+                memory=self._memory,
+                resources=self._resources,
+            )
+            logger.info("Vision engine enabled")
+        except Exception as e:
+            logger.warning("Vision engine not available: %s", e)
+
+    @property
+    def vision(self) -> Optional[VisionManager]:
+        return self._vision
 
     def get_identity_confidence(self) -> float:
         if self._identity_verifier is None:

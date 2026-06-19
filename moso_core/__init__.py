@@ -97,6 +97,12 @@ try:
 except ImportError:
     COMPUTER_USE_AVAILABLE = False
 
+try:
+    from moso_core.vision import VISION_AVAILABLE as _vision_flag
+    VISION_AVAILABLE = _vision_flag
+except ImportError:
+    VISION_AVAILABLE = False
+
 __all__ = [
     "InferenceConfig",
     "ModelBackend",
@@ -121,4 +127,5 @@ __all__ = [
     "ToolRegistry",
     "AGENTS_AVAILABLE",
     "COMPUTER_USE_AVAILABLE",
+    "VISION_AVAILABLE",
 ]
