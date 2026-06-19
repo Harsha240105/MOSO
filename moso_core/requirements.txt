@@ -4,3 +4,13 @@ transformers>=4.36.0
 pydantic>=2.6.0
 numpy>=1.24.0
 tokenizers>=0.15.0
+
+# Voice Pipeline
+openai-whisper>=20231117
+torch>=2.1.0
+speechbrain>=0.5.15
+sounddevice>=0.4.6
+soundfile>=0.12.1
+piper-tts>=1.2.0
+webrtcvad>=2.0.6
+TTS>=0.22.0

@@ -34,8 +34,9 @@
 <!-- Animated Status Badges -->
 <a href="https://github.com/MOSO-AI/moso-app"><img src="https://img.shields.io/badge/Status-Development-8A2BE2?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwb2x5bGluZSBwb2ludHM9IjEyIDYgMTIgMTIgMTYgMTQiLz48L3N2Zz4=" alt="Status"/></a>
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-MOSO%20Source-e74c3c?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cmVjdCB4PSIzIiB5PSIxMSIgd2lkdGg9IjE4IiBoZWlnaHQ9IjExIiByeD0iMiIgcnk9IjIiLz48cGF0aCBkPSJNNyAxMVY3YzAtMi43NiAyLjI0LTUgNS01czUgMi4yNCA1IDV2NCIvPjwvc3ZnPg==" alt="License"/></a>
-<a href="https://github.com/MOSO-AI/moso-app/releases"><img src="https://img.shields.io/badge/Version-0.1.0--dev-00d2ff?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cG9seWdvbiBwb2ludHM9IjEyIDIgMTUgOSAyMiA5IDE2LjUgMTQuNSAxOSAyMiAxMiAxNyA1IDIyIDcuNSAxNC41IDIgOSA5IDkiLz48L3N2Zz4=" alt="Version"/></a>
+<a href="https://github.com/MOSO-AI/moso-app/releases"><img src="https://img.shields.io/badge/Version-0.2.0--dev-00d2ff?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cG9seWdvbiBwb2ludHM9IjEyIDIgMTUgOSAyMiA5IDE2LjUgMTQuNSAxOSAyMiAxMiAxNyA1IDIyIDcuNSAxNC41IDIgOSA5IDkiLz48L3N2Zz4=" alt="Version"/></a>
 <a href="SECURITY.md"><img src="https://img.shields.io/badge/Security-Enforced-2ecc71?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTIgMjJsLTctNC4xVjVjMC0zLjMgMi43LTYgNi02czYgMi43IDYgNnYxMi45TDcgMjJ6Ii8+PC9zdmc+" alt="Security"/></a>
+<a href="ROADMAP.md"><img src="https://img.shields.io/badge/Voice-Pipeline%20Ready-00d2ff?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTIgMWEzIDMgMCAwIDAtMyAzdjhhMyAzIDAgMCAwIDYgMFY0YTMgMyAwIDAgMC0zLTN6Ii8+PHBhdGggZD0iTTE5IDEwdjJhNyA3IDAgMCAxLTE0IDB2LTIiLz48bGluZSB4MT0iMTIiIHkxPSIxOSIgeDI9IjEyIiB5Mj0iMjMiLz48bGluZSB4MT0iOCIgeTE9IjIzIiB4Mj0iMTYiIHkyPSIyMyIvPjwvc3ZnPg==" alt="Voice"/></a>
 
 <br/>
 <br/>
@@ -83,10 +84,10 @@
 
 **MOSO** (M0S0) is a **privacy-first**, **local-first** adaptive AI assistant that runs entirely on your device. It learns from your behavior, adapts to your preferences, and grows with you — without ever compromising your privacy through cloud dependency.
 
-| | |
-|-|-|
-| **App** | **Engine** | **Persona** | **Memory** |
-| MOSO App | MOSO Core | M0S0 | MoSo Memory Engine |
+| | | |
+|-|-|-|
+| **App** | **Engine** | **Persona** | **Memory** | **Voice** |
+| MOSO App | MOSO Core | M0S0 | MoSo Memory Engine | MOSO Voice Pipeline |
 
 ---
 
@@ -170,10 +171,11 @@ The foundational runtime that powers all AI inference across platforms with mult
 | Module | Backends | Purpose |
 |--------|----------|---------|
 | **Inference** | llama.cpp, ONNX, CoreML, MLX, ExecuTorch | Unified model loading & execution |
-| **Pipelines** | Text, Voice, Image, Multimodal, Reasoning | Modality-specific processing chains |
+| **Pipelines** | Text, Voice, Image, Multimodal, Reasoning | Modality-specific processing chains (Voice: wake word → verify → STT → LLM → TTS) |
 | **Orchestration** | Priority scheduling, model routing, fallback | Dynamic pipeline composition |
 | **Agents** | Goal decomposition, tool use, self-reflection | Autonomous task execution |
 | **Safety** | Prompt injection detection, output sanitization | Content filtering and guardrails |
+| **Voice** | Input, VAD, wake word, speaker verify, STT, TTS, cloning | Full voice interaction pipeline |
 
 ### MoSo Memory Engine — Three-Tier Memory
 
@@ -188,13 +190,41 @@ The foundational runtime that powers all AI inference across platforms with mult
 - **Adaptive Personality** — Shifts tone and style based on user context
 - **Emotional Intelligence** — Detects and adapts to emotional states
 - **Contextual Awareness** — Remembers past conversations and preferences
-- **Voice-First Interaction** — Natural conversation with wake word support
+- **Voice-First Interaction** — Natural conversation with wake word, speaker verification, STT, and TTS with voice cloning
 
 ### Voice System
 
+The MOSO voice pipeline provides a complete hands-free interaction system with owner recognition and optional voice cloning.
+
 ```
-Microphone → Wake Word → Whisper STT → AI Processing → Coqui TTS → Speaker
+Microphone
+    ↓
+[Audio Stream] ─── VAD (Voice Activity Detection)
+    ↓
+[Wake Word Detector]  ←  "Hey MOSO", "Hello MOSO", "OK MOSO"
+    ↓
+[Speaker Verification]  ←  ECAPA-TDNN embedding comparison
+    ├── Owner (>95% match) → Full access
+    └── No match → Guest mode (limited)
+    ↓
+[Whisper STT]  ─── Speech-to-Text transcription
+    ↓
+[MOSO Orchestrator / LLM]  ─── AI processing
+    ↓
+[Text-to-Speech]  ─── Piper TTS (fast) / XTTS-v2 (cloned voice)
+    ↓
+        Speaker
 ```
+
+| Component | Model | Purpose |
+|-----------|-------|---------|
+| **VAD** | webrtcvad | Voice activity detection, silence trimming |
+| **Wake Word** | openWakeWord / keyword spotting | "Hey MOSO" activation |
+| **Speaker Verification** | SpeechBrain ECAPA-TDNN | Owner recognition (192-dim embeddings) |
+| **Speech-to-Text** | Whisper (tiny→large) | Local transcription, language detection |
+| **Text-to-Speech** | Piper TTS (fast) + XTTS-v2 (clone) | Voice output with optional voice cloning |
+| **Continuous Auth** | ECAPA + cosine similarity | Periodic re-verification during sessions |
+| **Voice Cloning** | XTTS-v2 fine-tuning | Clone owner's voice (30min–5hr dataset) |
 
 ### Vision System
 
@@ -275,9 +305,9 @@ Microphone → Wake Word → Whisper STT → AI Processing → Coqui TTS → Spe
     <td>Speech-to-text</td>
   </tr>
   <tr>
-    <td>Coqui / Piper TTS</td>
-    <td>v1.0+</td>
-    <td>Text-to-speech</td>
+    <td>Whisper (STT) / Piper TTS / XTTS-v2</td>
+    <td>v3 / v1.0+ / v2.0+</td>
+    <td>Speech-to-text & text-to-speech</td>
   </tr>
   <tr>
     <td>CLIP / LLaVA</td>
@@ -497,11 +527,32 @@ Without explicit written permission, you may NOT:
 | Phase | Focus | Timeline |
 |-------|-------|----------|
 | **Phase 1** — Foundation | Core inference, basic memory, Flutter shell | Q1-Q2 2025 |
-| **Phase 2** — Intelligence | Adaptive personality, RAG, voice pipeline | Q2-Q3 2025 |
+| **Phase 2** — Intelligence | Adaptive personality, RAG, voice pipeline ✅ | Q2-Q3 2025 |
 | **Phase 3** — Ecosystem | Cloud sync, vision, recommendation engine | Q3-Q4 2025 |
 | **Phase 4** — Scale | Agent SDK, multimodal, federated learning | 2026 |
 
 See [ROADMAP.md](ROADMAP.md) for the full roadmap.
+
+---
+
+## ✧ Quick Start — Voice Mode
+
+```bash
+# 1. Download voice models
+python -m scripts.model-download.download_voice_models
+
+# 2. Enroll your voice (3 samples)
+python -m scripts.enroll_voice
+
+# 3. Run voice mode
+python -m scripts.run_voice --model models/llm/phi3/phi3.q4.gguf
+```
+
+**Voice Commands:**
+- Say **"Hey MOSO"** followed by your question or command
+- MOSO verifies your identity and responds
+- Guest speakers receive limited access
+- Press `Ctrl+C` to exit voice mode
 
 ---
 

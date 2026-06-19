@@ -24,6 +24,28 @@ from moso_core.pipelines.base import Pipeline, PipelineResult
 from moso_core.pipelines.text.pipeline import TextPipeline
 from moso_core.safety.guardrails import OutputGuard, PromptGuard
 
+try:
+    from moso_core.voice import (
+        AudioConfig,
+        AudioStream,
+        CoquiTTS,
+        ContinuousAuth,
+        EnrollmentManager,
+        PiperTTS,
+        SpeakerEmbedder,
+        SpeakerStore,
+        SpeakerVerifier,
+        VAD,
+        VoicePipeline,
+        VoicePipelineResult,
+        VoiceSession,
+        WakeWordDetector,
+        WhisperSTT,
+    )
+    VOICE_AVAILABLE = True
+except ImportError:
+    VOICE_AVAILABLE = False
+
 __all__ = [
     "InferenceConfig",
     "ModelBackend",
@@ -38,4 +60,5 @@ __all__ = [
     "Modality",
     "PromptGuard",
     "OutputGuard",
+    "VOICE_AVAILABLE",
 ]

@@ -2,11 +2,16 @@ import logging
 from enum import Enum
 from typing import Iterator, Optional, Type, Union
 
+from typing import TYPE_CHECKING
+
 from moso_core.inference.base import InferenceConfig, ModelBackend
 from moso_core.inference.llama_cpp.backend import LlamaCPPBackend
 from moso_core.pipelines.base import Pipeline, PipelineResult
 from moso_core.pipelines.text.pipeline import TextPipeline
 from moso_core.safety.guardrails import OutputGuard, PromptGuard
+
+if TYPE_CHECKING:
+    from moso_core.voice.pipeline import VoicePipeline
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +59,8 @@ class Orchestrator:
         )
         self._pipelines[Modality.TEXT] = self._text_pipeline
 
+        self._voice_pipeline = None
+
     def process(self, prompt: str, modality: Modality = Modality.TEXT, **kwargs) -> PipelineResult:
         if self._prompt_guard:
             guard_result = self._prompt_guard.check(prompt)
@@ -83,6 +90,49 @@ class Orchestrator:
 
         pipeline = self._resolve_pipeline(modality)
         yield from pipeline.run_stream(prompt, **kwargs)
+
+    def enable_voice(
+        self,
+        stt_model=None,
+        tts_model=None,
+        speaker_verifier=None,
+        audio_config=None,
+    ) -> None:
+        from moso_core.voice.pipeline import VoicePipeline
+        from moso_core.voice.input import AudioStream
+        from moso_core.voice.stt import WhisperSTT
+        from moso_core.voice.tts import PiperTTS
+        from moso_core.voice.speaker import SpeakerVerifier
+        from moso_core.voice.models import AudioConfig
+
+        self._voice_pipeline = VoicePipeline(
+            backend=self._get_or_create_backend(),
+            audio_config=audio_config or AudioConfig(),
+            stt_model=stt_model or WhisperSTT(),
+            tts_model=tts_model or PiperTTS(),
+            speaker_verifier=speaker_verifier or SpeakerVerifier(),
+            system_prompt=self._text_pipeline._system_prompt,
+        )
+        self._pipelines[Modality.VOICE] = self._voice_pipeline
+        logger.info("Voice pipeline enabled")
+
+    def process_voice(self, audio, sample_rate: int = 16000):
+        if self._voice_pipeline is None:
+            raise RuntimeError(
+                "Voice pipeline not enabled. Call enable_voice() first."
+            )
+        return self._voice_pipeline.process_voice(audio, sample_rate)
+
+    def listen_and_respond(self, audio_stream=None):
+        if self._voice_pipeline is None:
+            raise RuntimeError(
+                "Voice pipeline not enabled. Call enable_voice() first."
+            )
+        return self._voice_pipeline.listen_and_respond(audio_stream)
+
+    @property
+    def voice_pipeline(self):
+        return self._voice_pipeline
 
     def reset_conversation(self, modality: Modality = Modality.TEXT) -> None:
         pipeline = self._pipelines.get(modality)
