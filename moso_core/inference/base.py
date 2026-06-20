@@ -63,6 +63,9 @@ class ModelBackend(ABC):
     def unload(self) -> None:
         ...
 
+    def embed(self, text: str) -> list[float]:
+        raise NotImplementedError(f"{type(self).__name__} does not support embeddings")
+
     @abstractmethod
     def tokenize(self, text: str) -> list[int]:
         ...

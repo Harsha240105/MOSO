@@ -152,6 +152,32 @@ class OnnxRuntimeBackend(ModelBackend):
         self._generator = None
         logger.info("ONNX model unloaded")
 
+    def embed(self, text: str) -> list[float]:
+        self._require_loaded()
+        inputs = self._tokenizer(
+            text,
+            return_tensors="np",
+            truncation=True,
+            max_length=self.config.n_ctx,
+            padding=True,
+        )
+        input_ids = inputs["input_ids"]
+        attention_mask = inputs["attention_mask"]
+        onnx_inputs = {
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
+        }
+        if self._session.get_inputs()[0].name == "token_type_ids":
+            onnx_inputs["token_type_ids"] = np.zeros_like(input_ids)
+
+        outputs = self._session.run(None, onnx_inputs)
+        last_hidden = outputs[0]
+        mask_expanded = np.expand_dims(attention_mask, axis=-1)
+        sum_embeddings = np.sum(last_hidden * mask_expanded, axis=1)
+        sum_mask = np.sum(mask_expanded, axis=1)
+        embedding = (sum_embeddings / (sum_mask + 1e-9)).flatten()
+        return embedding.tolist()
+
     def tokenize(self, text: str) -> list[int]:
         self._require_loaded()
         return self._tokenizer.encode(text)

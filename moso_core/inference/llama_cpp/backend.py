@@ -99,6 +99,11 @@ class LlamaCPPBackend(ModelBackend):
             del self._model
             self._model = None
 
+    def embed(self, text: str) -> list[float]:
+        self._require_loaded()
+        result = self._model.create_embedding(text)
+        return result["data"][0]["embedding"]
+
     def tokenize(self, text: str) -> list[int]:
         self._require_loaded()
         return self._model.tokenize(text.encode("utf-8"))

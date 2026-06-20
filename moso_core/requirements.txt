@@ -30,3 +30,10 @@ pygetwindow>=0.0.9
 
 # Vision V1
 pytesseract>=0.3.10
+
+# Real-Time Intelligence Engine
+beautifulsoup4>=4.12.0
+networkx>=3.0
+
+# Research Browser (optional)
+# playwright>=1.40.0

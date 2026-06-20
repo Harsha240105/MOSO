@@ -96,7 +96,10 @@
 | **Retrieval** | ✅ V1 | Keyword search, recent memory, type filtering |
 | **Summarization** | ✅ V1 | Event-to-fact extraction, activity summaries |
 | **Orchestrator Integration** | ✅ Complete | Memory context injection, auto-event logging, resource awareness |
-| **Embeddings / Vector Search** | 🔄 V2 | Planned for next release |
+| **Embeddings / Vector Search** | ✅ V2 | ModelBackend.embed() + VectorStore (SQLite FTS5 + cosine similarity) |
+| **Real-Time Intelligence** | ✅ V1 | Multi-source web research with risk/privacy checks, verification, analysis, summarization |
+| **Research Browser** | 🔄 V1 | Playwright headless browser with stealth, content extraction, screenshot, PDF (optional) |
+| **Knowledge Graph** | ✅ V1 | NetworkX + SQLite — entities, relationships, events, concepts with confidence scoring and timeline |
 | **GPU Monitoring** | 🔄 V2 | pynvml integration planned |
 | **Agent System** | ✅ V1.1 | Template-based planning + retry + dependencies + dry-run preview |
 | **Tool Engine** | ✅ V1 | File ops, apps, browser, terminal — structured tool execution |
@@ -125,6 +128,7 @@
 10. **Aura UI** — MOSO lives on your desktop as a floating orb. Always-on-top, draggable, with status animations (idle/listening/thinking/executing/error), system tray, and conversation bubbles
 11. **System Intelligence** — MOSO understands your entire computer: CPU model, GPU, motherboard, installed software, services, startup items, network connections, DNS, VPN, storage usage, firewall status, antivirus state, pending updates. It explains technical concepts in plain language, runs diagnostics with severity-ranked issues and suggestions, and tracks changes over time with SQLite-based inventory snapshots
 12. **Risk & Privacy Engine** — MOSO protects your system: pre-execution risk scoring scans network destinations, file paths, credential exposure, and data privacy implications. The reputation checker evaluates domains/IPs against a built-in blocklist and heuristic scoring. HIGH and CRITICAL risk actions are blocked automatically
+13. **Real-Time Intelligence** — MOSO researches the web on your behalf: risk-assessment-driven source selection, content fetching with redirect chain tracking and TLS verification, cross-source verification with duplicate detection and conflict resolution, keyword and LLM-based analysis, and transparent summarization. Embeddings power vector search across memory. A Knowledge Graph tracks entities, relationships, events, and concepts with confidence scoring and temporal awareness. An optional Playwright-based Research Browser provides autonomous page extraction with stealth mode, metadata parsing, and PDF download
 
 Everything runs locally — no cloud dependency, no data leaves your device.
 
@@ -194,6 +198,13 @@ Everything runs locally — no cloud dependency, no data leaves your device.
 │  └──────────────────────────┬───────────────────────────────┘   │
 │                             ▼                                    │
 │  ┌──────────────────────────────────────────────────────────┐   │
+│  │               Real-Time Intelligence                      │   │
+│  │  Multi-Source Fetcher │ Source Verifier │ Analyzer        │   │
+│  │  Risk Engine │ Privacy Check │ Reputation │ Summarizer    │   │
+│  │  Knowledge Graph │ Research Browser (Playwright)          │   │
+│  └──────────────────────────┬───────────────────────────────┘   │
+│                             ▼                                    │
+│  ┌──────────────────────────────────────────────────────────┐   │
 │  │               Risk & Privacy Engine                       │   │
 │  │  Network Reputation │ File Impact │ Credential Check      │   │
 │  │  Privacy Analysis │ Permission Check │ Resource Impact    │   │
@@ -236,6 +247,10 @@ The foundational runtime that powers all AI inference across platforms with mult
 | **Screen Vision** | OCR, Text Regions, Window Detection, Context | Screenshot OCR — pytesseract, mss, pygetwindow |
 | **System Intelligence** | Hardware, Software, Network, Storage, Security, Diagnostics, Inventory, Explainer | Live system understanding — psutil, winreg, subprocess
 | **Risk & Privacy Engine** | Network Reputation, File Impact, Credential Check, Privacy Analysis | Pre-execution risk scoring blocks HIGH/CRITICAL actions — built-in blocklist + heuristic scoring
+| **Real-Time Intelligence** | Multi-Source Fetcher, Cache, Risk Engine, Privacy Check, Reputation, Source Verifier, Analyzer, Summarizer | Web research pipeline — risk-aware source selection, content fetching, cross-source verification, LLM/keyword analysis, transparent summaries |
+| **Vector Store** | SQLite FTS5 + cosine similarity | Embedding-aware storage with hybrid search — FTS5 keyword, semantic cosine, weighted combination |
+| **Knowledge Graph** | NetworkX + SQLite | Entity, relationship, event, and concept tracking with confidence scoring, source attribution, and timeline queries |
+| **Research Browser** | Playwright (headless Chromium) | Optional autonomous page fetching with stealth mode, content extraction, metadata parsing, screenshot, PDF download |
 | **LLM Integration** | Server, Chat, Completion | llama.cpp server binary — subprocess HTTP backend |
 | **Aura UI** | Floating Orb, Conversation Bubble, Tray | Desktop overlay — PySide6 |
 
@@ -1266,6 +1281,21 @@ moso-core/                  # AI runtime, voice, identity, memory
 │   ├── verification.py     # verify(action, tool, params) → RiskReport
 │   ├── manager.py          # RiskManager facade with assess(), check_and_block()
 │   └── __init__.py         # Exports + RISK_AVAILABLE flag
+├── realtime/               # Real-Time Intelligence Engine
+│   ├── manager.py          # RealtimeManager — full research pipeline
+│   ├── models.py           # SourceInfo, FetchResult, AnalysisResult, SourceVerification, RealtimeResponse, ResearchReport
+│   ├── cache.py            # ResponseCache — SQLite TTL cache
+│   ├── fetcher.py          # Fetcher — async multi-source HTTP fetching
+│   ├── sources.py          # SourceDefinition, PREDEFINED_SOURCES (27 sources), category detection, tier system
+│   ├── risk_engine.py      # WebRiskEngine — URL risk assessment
+│   ├── privacy_check.py    # WebPrivacyChecker — privacy exposure analysis
+│   ├── reputation.py       # WebReputationChecker — domain/IP blocklist + heuristics
+│   ├── verifier.py         # SourceVerifier — cross-source verification, dedup, conflict detection
+│   ├── analyzer.py         # Analyzer — keyword + LLM analysis, deep 15-point format
+│   ├── summarizer.py       # Summarizer — transparent report generation
+│   ├── research_browser.py # ResearchBrowser — Playwright headless browser (optional)
+│   ├── knowledge_graph.py  # KnowledgeGraph — NetworkX + SQLite, entities/relationships/events/concepts
+│   └── __init__.py         # Exports + REALTIME_AVAILABLE + RESEARCH_BROWSER_AVAILABLE flags
 ├── resources/              # Local resource monitoring
 │   ├── manager.py          # ResourceManager facade
 │   ├── cpu.py              # CPUMonitor (usage, freq, temp)
@@ -1353,12 +1383,15 @@ feature/*   ─── New features (branched from main, PR to merge)
 | **Phase 3** — Memory Engine | Episodic + semantic + procedural + preferences, SQLite | ✅ Complete |
 | **Phase 4** — Resource Manager | CPU, RAM, storage, battery, network, process monitoring | ✅ Complete |
 | **Phase 5** — Tool Engine | File ops, apps, browser, terminal — permission-gated + audit-logged | ✅ Complete |
-| **Phase 6** — Intelligence | Embeddings + vector search, GPU monitoring, RAG | 🔄 Next |
+| **Phase 6** — Intelligence | Embeddings + vector search, GPU monitoring, RAG | ✅ Complete |
 | **Phase 7** — Agent System | Template-based goal decomposition, task execution, retry, dependencies, dry-run | ✅ Complete |
 | **Phase 8** — Computer Use | Mouse, keyboard, screen capture, window management, automation, recorder | ✅ Complete |
 | **Phase 9** — Vision V1 | Screenshot OCR, text region detection, active window detection, screen context | ✅ Complete |
 | **Phase 10** — LLM + Aura UI | llama.cpp server binary integration, floating desktop orb with PySide6 | ✅ Complete |
 | **Phase 11** — Risk & Privacy Engine | Pre-execution risk scoring, network reputation, credential exposure, privacy analysis | ✅ Complete |
+| **Phase 12** — Real-Time Intelligence | Multi-source web research pipeline, risk/privacy-aware source selection, cross-source verification, analysis (keyword + LLM), summarization, transparent audit trail | ✅ Complete |
+| **Phase 13** — Knowledge Graph | Entity/relationship/event/concept tracking, NetworkX in-memory + SQLite persistence, confidence scoring, timeline queries, subgraph export | ✅ Complete |
+| **Phase 14** — Research Browser | Playwright headless browser, stealth mode, content extraction, metadata parsing, screenshot, PDF download | 🔄 Optional (requires playwright) |
 
 ---
 

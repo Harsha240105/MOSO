@@ -116,6 +116,12 @@ except ImportError:
     VISION_AVAILABLE = False
 
 try:
+    from moso_core.realtime import RealtimeManager, REALTIME_AVAILABLE as _rt_flag
+    REALTIME_AVAILABLE = _rt_flag
+except ImportError:
+    REALTIME_AVAILABLE = False
+
+try:
     from moso_core.llm import LLM_AVAILABLE as _llm_flag, LLMConfig, LLMManager, LlamaServer
     LLM_AVAILABLE = _llm_flag
 except ImportError:
@@ -152,4 +158,6 @@ __all__ = [
     "LLMConfig",
     "LLMManager",
     "LlamaServer",
+    "REALTIME_AVAILABLE",
+    "RealtimeManager",
 ]
