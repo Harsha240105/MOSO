@@ -1,20 +1,99 @@
 <div align="center">
 
-<!-- Animated Logo -->
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/DARK-MOSO%20AI-8A2BE2?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgMkwyIDd2NmMwIDUgNSAxMCAxMCAxMCA1IDAgMTAtNSAxMC0xMFY3TDEyIDJ6Ii8+PHBhdGggZD0iTTEyIDIydi0xMCIvPjxwYXRoIGQ9Ik02IDlsNiAzIDYtMyIvPjwvc3ZnPg=="/>
-  <img src="https://img.shields.io/badge/LIGHT-MOSO%20AI-6A0DAD?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2QTBEQUQiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgMkwyIDd2NmMwIDUgNSAxMCAxMCAxMCA1IDAgMTAtNSAxMC0xMFY3TDEyIDJ6Ii8+PHBhdGggZD0iTTEyIDIydi0xMCIvPjxwYXRoIGQ9Ik02IDlsNiAzIDYtMyIvPjwvc3ZnPg==" width="0" height="0"/>
-</picture>
+<!-- Animated Matrix SVG Logo -->
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="120" viewBox="0 0 400 120">
+  <defs>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff41;stop-opacity:1">
+        <animate attributeName="stop-color" values="#00ff41;#00cc00;#00ff41" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#00cc00;stop-opacity:1">
+        <animate attributeName="stop-color" values="#00cc00;#00ff41;#00cc00" dur="3s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+    <filter id="glowFilter">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowStrong">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Matrix rain background -->
+  <text x="50" y="20" fill="#00ff41" opacity="0.08" font-family="monospace" font-size="8">
+    <tspan x="10">01001101 01001111 01010011 01001111</tspan>
+    <tspan x="10" y="30">01001101 01000101 01001101 01001111</tspan>
+    <tspan x="10" y="40">01010010 01011001 00100000 01000001</tspan>
+    <tspan x="10" y="50">01001001 00100000 01010000 01010010</tspan>
+    <tspan x="10" y="60">01001001 01010110 01000001 01000011</tspan>
+    <tspan x="10" y="70">01011001 00100000 01000110 01001001</tspan>
+    <tspan x="10" y="80">01010010 01010011 01010100 00001010</tspan>
+  </text>
+
+  <!-- MOSO AI with glow -->
+  <text x="200" y="55" fill="url(#glow)" filter="url(#glowStrong)" font-family="monospace" font-size="48" font-weight="bold" text-anchor="middle" letter-spacing="4">
+    MOSO AI
+    <animate attributeName="opacity" values="1;0.85;1" dur="2s" repeatCount="indefinite"/>
+  </text>
+
+  <!-- Subtitle with scan animation -->
+  <text x="200" y="78" fill="#00ff41" font-family="monospace" font-size="13" text-anchor="middle" letter-spacing="3" opacity="0.8">
+    PRIVACY-FIRST ADAPTIVE INTELLIGENCE
+    <animate attributeName="letter-spacing" values="3;5;3" dur="4s" repeatCount="indefinite"/>
+  </text>
+
+  <!-- Scanning line -->
+  <rect x="50" y="0" width="300" height="2" fill="#00ff41" opacity="0.6" filter="url(#glow)">
+    <animate attributeName="y" values="0;118;0" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0;0.6" dur="4s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Glowing corner brackets -->
+  <path d="M40 20 L50 20 L50 10" stroke="#00ff41" stroke-width="2" fill="none" opacity="0.8" filter="url(#glow)">
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M360 20 L350 20 L350 10" stroke="#00ff41" stroke-width="2" fill="none" opacity="0.8" filter="url(#glow)">
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M40 100 L50 100 L50 110" stroke="#00ff41" stroke-width="2" fill="none" opacity="0.8" filter="url(#glow)">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M360 100 L350 100 L350 110" stroke="#00ff41" stroke-width="2" fill="none" opacity="0.8" filter="url(#glow)">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Pulsing dots -->
+  <circle cx="100" cy="105" r="2" fill="#00ff41" filter="url(#glow)">
+    <animate attributeName="r" values="2;4;2" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="130" cy="105" r="2" fill="#00ff41" filter="url(#glow)">
+    <animate attributeName="r" values="2;4;2" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="160" cy="105" r="2" fill="#00ff41" filter="url(#glow)">
+    <animate attributeName="r" values="2;4;2" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+  </circle>
+</svg>
 
 <br/>
 
-<!-- Animated Typing Effect via SVG -->
-<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=28&duration=3000&pause=1000&color=8A2BE2&center=true&vCenter=true&width=600&height=70&lines=MOSO+AI;Privacy-First+AI+Assistant;Local+Intelligence;Adaptive+Memory" alt="MOSO AI Typing Animation"/>
+<!-- Animated Typing Effect (green) -->
+<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=22&duration=3000&pause=1000&color=00FF41&center=true&vCenter=true&width=600&height=50&lines=LOCAL+INTELLIGENCE+%E2%97%86+ADAPTIVE+MEMORY+%E2%97%86+OFFLINE+FIRST" alt="MOSO AI Typing Animation"/>
 
 <br/>
 
-<!-- Animated Neural Network Bars -->
-<img src="https://www.animatedimages.org/data/media/562/animated-line-image-0184.gif" width="100%" height="2"/>
+<!-- Green divider -->
+<img src="https://img.shields.io/badge/━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━-00ff41?style=for-the-badge&labelColor=000" width="100%"/>
 
 <br/>
 
@@ -31,28 +110,28 @@
 
 <br/>
 
-<!-- Animated Status Badges -->
-<a href="#"><img src="https://img.shields.io/badge/Status-Development-8A2BE2?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwb2x5bGluZSBwb2ludHM9IjEyIDYgMTIgMTIgMTYgMTQiLz48L3N2Zz4=" alt="Status"/></a>
-<a href="LICENSE"><img src="https://img.shields.io/badge/License-MOSO%20Source-e74c3c?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cmVjdCB4PSIzIiB5PSIxMSIgd2lkdGg9IjE4IiBoZWlnaHQ9IjExIiByeD0iMiIgcnk9IjIiLz48cGF0aCBkPSJNNyAxMVY3YzAtMi43NiAyLjI0LTUgNS01czUgMi4yNCA1IDV2NCIvPjwvc3ZnPg==" alt="License"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Version-0.2.0--dev-00d2ff?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cG9seWdvbiBwb2ludHM9IjEyIDIgMTUgOSAyMiA5IDE2LjUgMTQuNSAxOSAyMiAxMiAxNyA1IDIyIDcuNSAxNC41IDIgOSA5IDkiLz48L3N2Zz4=" alt="Version"/></a>
-<a href="SECURITY.md"><img src="https://img.shields.io/badge/Security-Enforced-2ecc71?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTIgMjJsLTctNC4xVjVjMC0zLjMgMi43LTYgNi02czYgMi43IDYgNnYxMi45TDcgMjJ6Ii8+PC9zdmc+" alt="Security"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Voice-Pipeline%20Ready-00d2ff?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTIgMWEzIDMgMCAwIDAtMyAzdjhhMyAzIDAgMCAwIDYgMFY0YTMgMyAwIDAgMC0zLTN6Ii8+PHBhdGggZD0iTTE5IDEwdjJhNyA3IDAgMCAxLTE0IDB2LTIiLz48bGluZSB4MT0iMTIiIHkxPSIxOSIgeDI9IjEyIiB5Mj0iMjMiLz48bGluZSB4MT0iOCIgeTE9IjIzIiB4Mj0iMTYiIHkyPSIyMyIvPjwvc3ZnPg==" alt="Voice"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Identity-Multi--Signal-2ecc71?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTIgMjJsLTctNC4xVjVjMC0zLjMgMi43LTYgNi02czYgMi43IDYgNnYxMi45TDcgMjJ6Ii8+PC9zdmc+" alt="Identity"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Memory-Persistent-f39c12?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTIiIHJ4PSIyIi8+PHBhdGggZD0iTTIyIDEwSDJ2M2gyMGwwLTMiLz48bGluZSB4MT0iMTIiIHkxPSI2IiB4Mj0iMTIiIHkyPSIxOCIvPjwvc3ZnPg==" alt="Memory"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Resources-Monitoring-e67e22?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSIyIi8+PGxpbmUgeDE9IjkiIHkxPSIxMiIgeDI9IjE1IiB5Mj0iMTIiLz48bGluZSB4MT0iMTIiIHkxPSI5IiB4Mj0iMTIiIHkyPSIxNSIvPjwvc3ZnPg==" alt="Resources"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Tools-Action%20Ready-e74c3c?style=flat-square&labelColor=1a1a2e&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTQgMkg2YTIgMiAwIDAgMC0yIDJ2MTZhMiAyIDAgMCAwIDIgMmgxMmEyIDIgMCAwIDAgMi0yVjh6Ii8+PHBvbHlsaW5lIHBvaW50cz0iMTQgMiAxNCA4IDIwIDgiLz48bGluZSB4MT0iMTIiIHkxPSIxMiIgeDI9IjEyIiB5Mj0iMTYiLz48bGluZSB4MT0iOSIgeTE9IjE0IiB4Mj0iMTUiIHkyPSIxNCIvPjwvc3ZnPg==" alt="Tools"/></a>
+<!-- Status Badges - Green/Black Theme -->
+<a href="#"><img src="https://img.shields.io/badge/Status-Development-00ff41?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwb2x5bGluZSBwb2ludHM9IjEyIDYgMTIgMTIgMTYgMTQiLz48L3N2Zz4=" alt="Status"/></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-MOSO%20Source-00ff41?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48cmVjdCB4PSIzIiB5PSIxMSIgd2lkdGg9IjE4IiBoZWlnaHQ9IjExIiByeD0iMiIgcnk9IjIiLz48cGF0aCBkPSJNNyAxMVY3YzAtMi43NiAyLjI0LTUgNS01czUgMi4yNCA1IDV2NCIvPjwvc3ZnPg==" alt="License"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Version-0.2.0--dev-ffffff?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cG9seWdvbiBwb2ludHM9IjEyIDIgMTUgOSAyMiA5IDE2LjUgMTQuNSAxOSAyMiAxMiAxNyA1IDIyIDcuNSAxNC41IDIgOSA5IDkiLz48L3N2Zz4=" alt="Version"/></a>
+<a href="SECURITY.md"><img src="https://img.shields.io/badge/Security-Enforced-00ff41?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48cGF0aCBkPSJNMTIgMjJsLTctNC4xVjVjMC0zLjMgMi43LTYgNi02czYgMi43IDYgNnYxMi45TDcgMjJ6Ii8+PC9zdmc+" alt="Security"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Voice-Pipeline%20Ready-00ff41?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48cGF0aCBkPSJNMTIgMWEzIDMgMCAwIDAtMyAzdjhhMyAzIDAgMCAwIDYgMFY0YTMgMyAwIDAgMC0zLTN6Ii8+PHBhdGggZD0iTTE5IDEwdjJhNyA3IDAgMCAxLTE0IDB2LTIiLz48bGluZSB4MT0iMTIiIHkxPSIxOSIgeDI9IjEyIiB5Mj0iMjMiLz48bGluZSB4MT0iOCIgeTE9IjIzIiB4Mj0iMTYiIHkyPSIyMyIvPjwvc3ZnPg==" alt="Voice"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Identity-Multi--Signal-ffffff?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMTIgMjJsLTctNC4xVjVjMC0zLjMgMi43LTYgNi02czYgMi43IDYgNnYxMi45TDcgMjJ6Ii8+PC9zdmc+" alt="Identity"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Memory-Persistent-00ff41?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTIiIHJ4PSIyIi8+PHBhdGggZD0iTTIyIDEwSDJ2M2gyMGwwLTMiLz48bGluZSB4MT0iMTIiIHkxPSI2IiB4Mj0iMTIiIHkyPSIxOCIvPjwvc3ZnPg==" alt="Memory"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Resources-Monitoring-ffffff?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjZmZmIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSIyIi8+PGxpbmUgeDE9IjkiIHkxPSIxMiIgeDI9IjE1IiB5Mj0iMTIiLz48bGluZSB4MT0iMTIiIHkxPSI5IiB4Mj0iMTIiIHkyPSIxNSIvPjwvc3ZnPg==" alt="Resources"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Tools-Action%20Ready-00ff41?style=flat-square&labelColor=0a0a0a&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48cGF0aCBkPSJNMTQgMkg2YTIgMiAwIDAgMC0yIDJ2MTZhMiAyIDAgMCAwIDIgMmgxMmEyIDIgMCAwIDAgMi0yVjh6Ii8+PHBvbHlsaW5lIHBvaW50cz0iMTQgMiAxNCA4IDIwIDgiLz48bGluZSB4MT0iMTIiIHkxPSIxMiIgeDI9IjEyIiB5Mj0iMTYiLz48bGluZSB4MT0iOSIgeTE9IjE0IiB4Mj0iMTUiIHkyPSIxNCIvPjwvc3ZnPg==" alt="Tools"/></a>
 
 <br/>
 <br/>
 
-<!-- IMPORTANT NOTICE - Animated Blinking Border -->
-<blockquote style="border-left: 4px solid #e74c3c; background: rgba(231, 76, 60, 0.05); padding: 16px; border-radius: 4px; animation: pulse 2s infinite;">
-  <h3 align="center" style="color: #e74c3c; margin: 0;">
-    ⚠️ VIEWING ACCESS DOES NOT GRANT USAGE RIGHTS ⚠️
+<!-- IMPORTANT NOTICE - Green Glow Effect -->
+<blockquote style="border-left: 4px solid #00ff41; background: rgba(0, 255, 65, 0.03); padding: 16px; border-radius: 4px; box-shadow: 0 0 15px rgba(0, 255, 65, 0.15);">
+  <h3 align="center" style="color: #00ff41; margin: 0; text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);">
+    ⚠ VIEWING ACCESS DOES NOT GRANT USAGE RIGHTS ⚠
   </h3>
-  <p align="center" style="margin: 8px 0 0; font-size: 0.9em; color: #666;">
+  <p align="center" style="margin: 8px 0 0; font-size: 0.9em; color: #888;">
     This repository is source-available under the 
-    <a href="LICENSE" style="color: #e74c3c; font-weight: bold;">MOSO Source Available License</a>.
+    <a href="LICENSE" style="color: #00ff41; font-weight: bold; text-decoration: none;">MOSO Source Available License</a>.
     Viewing the code does not grant permission to use, copy, modify, redistribute,
     or train AI models with this code. Written permission required.
   </p>
@@ -60,20 +139,20 @@
 
 <br/>
 
-<!-- Animated Stats Grid -->
+<!-- Feature Badges - Green Theme -->
 <table>
   <tr>
     <td align="center" width="200">
-      <img src="https://img.shields.io/badge/▸_PRIVACY_FIRST-8A2BE2?style=for-the-badge&labelColor=1a1a2e"/>
+      <img src="https://img.shields.io/badge/▸_PRIVACY_FIRST-000000?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48cGF0aCBkPSJNMTIgMjJsLTctNC4xVjVjMC0zLjMgMi43LTYgNi02czYgMi43IDYgNnYxMi45TDcgMjJ6Ii8+PC9zdmc+&labelColor=00ff41"/>
     </td>
     <td align="center" width="200">
-      <img src="https://img.shields.io/badge/▸_LOCAL_AI-00d2ff?style=for-the-badge&labelColor=1a1a2e"/>
+      <img src="https://img.shields.io/badge/▸_LOCAL_AI-000000?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwb2x5bGluZSBwb2ludHM9IjEyIDYgMTIgMTIgMTYgMTQiLz48L3N2Zz4=&labelColor=00ff41"/>
     </td>
     <td align="center" width="200">
-      <img src="https://img.shields.io/badge/▸_ADAPTIVE_MEMORY-2ecc71?style=for-the-badge&labelColor=1a1a2e"/>
+      <img src="https://img.shields.io/badge/▸_ADAPTIVE_MEMORY-000000?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iMTYiIGhlaWdodD0iMTIiIHJ4PSIyIi8+PHBhdGggZD0iTTIyIDEwSDJ2M2gyMGwwLTMiLz48bGluZSB4MT0iMTIiIHkxPSI2IiB4Mj0iMTIiIHkyPSIxOCIvPjwvc3ZnPg=&labelColor=ffffff"/>
     </td>
     <td align="center" width="200">
-      <img src="https://img.shields.io/badge/▸_OFFLINE_FIRST-e74c3c?style=for-the-badge&labelColor=1a1a2e"/>
+      <img src="https://img.shields.io/badge/▸_OFFLINE_FIRST-000000?style=for-the-badge&logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjMDBmZjQxIj48cGF0aCBkPSJNMSAxMmw5LTl2NWMwIDYgMiAxMCA2IDEyczYtNiA2LTEyVjNsOSA5LTEyIDEyLTEyLTEyeiIvPjwvc3ZnPg=&labelColor=00ff41"/>
     </td>
   </tr>
 </table>
@@ -1541,10 +1620,22 @@ Say **"Hey MOSO"** followed by your question or command.
   <sub>© 2024-2026 MOSO AI. All rights reserved. Source available under MOSO Source Available License.</sub>
 </p>
 
-<!-- Invisible style block for animations -->
+<!-- Style block for animations -->
 <style>
-  @keyframes pulse {
-    0%, 100% { border-color: #e74c3c; opacity: 1; }
-    50% { border-color: #ff6b6b; opacity: 0.8; }
+  @keyframes greenPulse {
+    0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 65, 0.3); border-color: #00ff41; }
+    50% { box-shadow: 0 0 25px rgba(0, 255, 65, 0.6); border-color: #00ff41; }
+  }
+  @keyframes scanLine {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+  @keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(2px, -1px); }
+    60% { transform: translate(-1px, -2px); }
+    80% { transform: translate(1px, 1px); }
+    100% { transform: translate(0); }
   }
 </style>
